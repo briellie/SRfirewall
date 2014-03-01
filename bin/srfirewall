@@ -23,8 +23,8 @@ FW_VERSION="2.0"
 
 # Important directory locations
 FWPREFIX="/usr/local"
-FWCONFIGDIR="${FWPREFIX}/etc/firewall-sosdg"
-FWLIBDIR="${FWPREFIX}/lib/firewall-sosdg"
+FWCONFIGDIR="${FWPREFIX}/etc/srfirewall"
+FWLIBDIR="${FWPREFIX}/lib/srfirewall"
 FWBINDIR="${FWPREFIX}/bin"
 
 # Begin sourcing critical files, because we need things like path right away
@@ -33,6 +33,10 @@ source "${FWLIBDIR}/binaries.inc"
 source "${FWLIBDIR}/iptables.inc"
 source "${FWLIBDIR}/display.inc"
 
+source "${FWCONFIGDIR}/chains.conf"
+source "${FWCONFIGDIR}/ipv4.conf"
+source "${FWCONFIGDIR}/ipv6.conf"
+
 # We require at least bash v3 or later at this point given some of the more complex
 # operations we do to make the firewall script work.
 if (( ${BASH_VERSINFO[0]} <= "2" )); then
@@ -40,4 +44,28 @@ if (( ${BASH_VERSINFO[0]} <= "2" )); then
 	echo "of bash to something more recent, preferably the latest which is, as of this"
 	echo "writing, 4.x"
 	exit 1
+fi
+
+# Swap out display_c command for dummy command if they don't want
+# output when command is run.
+if [[ "${DisplayDetailedOutput" == "yes" ]]; then
+	display="display_c"
+else
+	display="true"
+fi
+
+if [[ "${EnableIPv4}" == "yes" ]]; then
+	# First flush all rules
+	iptables_rules_flush ipv4
+	
+	# Create the chain sets we'll need and the ones that can be
+	# customized by users in their custom rules
+
+	
+
+fi
+
+if [[ "${EnableIPv6}" == "yes" ]]; then
+	# First flush all rules
+	iptables_rules_flush ipv6
 fi

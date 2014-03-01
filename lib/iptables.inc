@@ -28,7 +28,7 @@ function iptables_rules_flush {
 		ipv6) VER_IPTABLES=${IP6TABLES} ; TABLE_NAMES=/proc/net/ip6_tables_names ;;
 		ipv4|*) VER_IPTABLES=${IPTABLES} ; TABLE_NAMES=/proc/net/ip_tables_names ;;
 	esac
-	display_c RED "Flushing ${IP_VERSION} rules..."
+	${display_c} RED "Flushing ${IP_VERSION} rules..."
 	${VER_IPTABLES} --flush &>/dev/null
 	${VER_IPTABLES} -F OUTPUT &>/dev/null
 	${VER_IPTABLES} -F PREROUTING &>/dev/null
@@ -49,8 +49,40 @@ function iptables_policy_reset {
 		ipv6) VER_IPTABLES=${IP6TABLES} ;;
 		ipv4|*) VER_IPTABLES=${IPTABLES} ;;
 	esac
-	display_c RED "Setting ${IP_VERSION} policies to ${SET_POLICY}..."
+	${display_c} RED "Setting ${IP_VERSION} policies to ${SET_POLICY}..."
 	${VER_IPTABLES} --policy INPUT ${SET_POLICY}
 	${VER_IPTABLES} --policy OUTPUT ${SET_POLICY}
 	${VER_IPTABLES} --policy FORWARD ${SET_POLICY}
+}
+
+# setup_iptables_chains (ipv4|ipv6)
+# Creates the default chains when called
+function setup_uptables_chains {
+	IP_VERSION=$1
+	case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES} ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES} ;;
+	esac
+	${display_c} GREEN "Setting up default chains for ${IP_VERSION}..."
+	${VER_IPTABLES} -N ${InCustomPreRules}
+	${VER_IPTABLES} -N ${InPreRules}
+	${VER_IPTABLES} -N ${OutCustomPreRules}
+	${VER_IPTABLES} -N ${OutPreRules}
+	${VER_IPTABLES} -N ${Trusted}
+	${VER_IPTABLES} -N ${InEasyBlock}
+	${VER_IPTABLES} -N ${OutEasyBlock}
+	${VER_IPTABLES} -N ${InCustomFilter}
+	${VER_IPTABLES} -N ${InFilter}
+	${VER_IPTABLES} -N ${OutCustomFilter}
+	${VER_IPTABLES} -N ${OutFilter}
+	${VER_IPTABLES} -N ${FwdCustomFilter}
+	${VER_IPTABLES} -N ${FwdFilter}
+	${VER_IPTABLES} -N ${CustomNAT}
+	${VER_IPTABLES} -N ${NAT}
+	${VER_IPTABLES} -N ${CustomPortForward}
+	${VER_IPTABLES} -N ${PortForward}
+	${VER_IPTABLES} -N ${InCustomPostRules}
+	${VER_IPTABLES} -N ${InPostRules}
+	${VER_IPTABLES} -N ${OutCustomPostRules}
+	${VER_IPTABLES} -N ${InPostRules}
 }
