@@ -1,0 +1,155 @@
+2.00 Alpha 1
+	- Complete code rewrite and restructure to solve some long standing issues with v1
+	- Separate out functions into support files for easier grouping of what they do
+	- Make more compatible with debian filesystem layout, including separating out into
+		/etc/firewall-sosdg for configs only, /usr/sbin for actual scripts, and
+		/usr/lib/firewall-sosdg for include/functions/etc that don't belong in config
+		
+=-=-=-=-= PRE 2.0 REWRITE =-=-=-=-=
+1.1 - Brielle Bruns <bruns@2mbit.com>
+	- Reorder rules, place allow before block to allow overrides
+	- Fixes for conntrack rules for better security (added -o/-i)
+	- Correct some incorrect info in options.default
+
+1.0 - Brielle Bruns <bruns@2mbit.com>
+	- Minor tweaks to various config files
+	- Fix issue with tweaks loading
+	- Version 1.0
+
+0.9.14 - Brielle Bruns <bruns@2mbit.com>
+	- IPv6 DHCP bypass rules (IPV6_LANDHCPSERVER)
+	- Move FORWARD Established,Related rules to inside NAT rules, since without NAT,
+	  we're not really going to need to track connections forwarding through the system.
+	  I can probably be proven wrong if you don't use NAT but use the script for stateful
+	  firewalling with non-RFC1918 IPs....
+	- Cleanup work on code for v1.0
+
+0.9.13 - Brielle Bruns <bruns@2mbit.com>
+	- Fix location of ipv6 fi statement, moved to end of ipv6 rules
+	- Add default policy rules and IPV{4|6}_P{INPUT|OUTPUT|FORWARD} options
+	  to control them.  Note the difference between BLOCKINCOMING and the PINPUT variable
+	- Oops, looks like my state match of allowing NEW was undoing the incoming blocks.  Fixed.
+	- IPV4_ALLOWED and IPV6_ALLOWED which will eventually replace TCPPORTS and UDPPORTS
+
+0.9.12 - Brielle Bruns <bruns@2mbit.com>
+	- Change IPV6_ROUTEDCLIENTBLOCK so you can specify ranges to
+	  block incoming to.
+	- Add support for allowing IPV6 critical ICMP messages, on by default
+	- Add support for interception of IPv4 packets, aka transparent proxy
+	- Add beginning support for error checking of variable inputs, still not functional yet.
+	- Test if we are using at least bash 3.x, since some of the more advanced features
+	  we are using to make this script work don't work too well with bash < 3.0 or dash.
+
+0.9.11 - Brielle Bruns <bruns@2mbit.com>
+	- Move some of the config clutter to conf/ - you can
+	  put your config files anywhere, but by default, they're
+	  now going to be in conf/
+	- Beginning work on configuration tool.  If it ever
+	  gets completed is a whole different story.  :)
+	- Option to use state or conntrack module for state tracking.
+	  By default, use conntrack.
+	- After some research, we seem to not need NEW state match in FORWARD
+	- Auto detect default gateway interface and IP of interface.  Has potential problems
+	  if run before we've got a default interface, so manually define EXTIF to be sure, and
+	  things should be okay.  This is mostly for people with dynamic IPs.
+
+0.9.10 - Brielle Bruns <bruns@2mbit.com>
+	- Move clamp mss up earlier in the rules to possibly
+	  fix an issue I noticed during testing
+	- Move icmp allow code
+	- Prevent duplicate icmp allow rules in NAT code
+	- NETMAP support in NAT code
+
+0.9.9a - Brielle Bruns <bruns@2mbit.com>
+	- Minor bug fixes for my coding errors introduced in
+	  the change of IPv6 variables
+
+0.9.9  - Brielle Bruns <bruns@2mbit.com>
+	- Loadable module support during firewall loading
+	- More init script fixes.
+	- Non-conntracked DNS reply packets allow options
+	- Slightly improved IPv6 support to start to bring
+	  it up to par with IPv4 support.
+	- ipv6 marking support, changed ipv4 to use | instead of :
+	- Renamed IPV6 variables, please read INSTALL file about conversion of config file
+	  to new format.
+
+0.9.8a - Brielle Bruns <bruns@2mbit.com>
+	- Fixing executable file permission issues
+	- Use /bin/bash in initscript cause dash does not recognize
+	  more advanced methods that bash can use.  Oops.  Easiest
+	  way to keep up to date is to symlink /etc/init.d/firewall-sosdg
+	  to /etc/firewall-sosdg/doc/firewall-sosdg.init
+
+0.9.8 - Brielle Bruns <bruns@2mbit.com>
+	- Almost at v1.0 quality for my tastes
+	- BLOCK_(INCOMING/OUTGOING)_RFC1918 options to help sure up security of LAN space leakage
+	- Changes to LANDHCPSERVER so it accepts interface names, plus a possible fix for win7
+	  hammering DHCP server for unknown reason?
+	- Cleanups
+	- No longer display list of blocked IPs, considering if they are
+	  as long as my list is, they'll take 4 pages to display...
+	- New block file format, much more capable now, thanks to
+	  an hour or two of improving my bash scripting skills to the
+	  point where I can do more complex breakdowns of formats
+	- Rename blocked to ipv4-blocked since we're going to have
+	  ipv6 support
+	- ipv6 blocking support.  Different format for config file
+	  because IPv6 uses :, which means we get to use | for both
+	  ipv4 and ipv6 (goes against a previous commit)
+
+0.9.7 - Brielle Bruns <bruns@2mbit.com>
+	- Support for marking packets, uses new config file and
+	  IPv4_MARK file option
+	- MULTI-NIC-ARP-LOCK hack added, to fix what I consider to be an annoying 'feature' of
+	  arp requests on Linux
+	- Allow use of multiport iptables module to reduce amount of rules
+
+0.9.6 - Brielle Bruns <bruns@2mbit.com>
+	- Minor changes to procedures in planning of 1.0
+
+0.9.5 - Brielle Bruns <bruns@2mbit.com>
+	- Makefile to automate building tarball and for future use
+	- More changes to port-forwards file to support source IP and external IP (existing
+	  config _will_ be incompatible)
+
+0.9.4 - Brielle Bruns <bruns@2mbit.com>
+	- Initscript
+	- stop-firewall for...  stopping the firewall!
+	- Code cleanups
+	- Use of functions for some processes
+	- Fix DHCP rule
+	- Obsoleted NATRANGE, NATEXTIP, NATEXTIF
+	- Added NAT_RANGE which can take SNAT/MASQ rules
+	- Changed port forwarding rules to include external interface
+
+0.9.3 - Brielle Bruns <bruns@2mbit.com>
+	- Misc tweaks and reorg
+	- Custom command files
+
+0.9 - Brielle Bruns <bruns@2mbit.com>
+	- Colorize output
+	- Added outbound port blocking options
+
+0.8 - Brielle Bruns <bruns@2mbit.com>
+	- IPv6 Connection Tracking fixes
+	- Strip ECN off of specific outbound packets
+
+0.7 - Brielle Bruns <bruns@2mbit.com>
+	- MSS Clamp on IPv6
+	- MSS Fixes, yes, its ugly
+	- Beginning support for bogons filtering and updater
+	  script.  Does not work yet, so don't use.
+
+0.6 - Brielle Bruns <bruns@2mbit.com>
+	- Fixed some potential ordering issues with NAT
+	- Added file for blocked IPs, plus new config option
+
+0.5 - Brielle Bruns <bruns@2mbit.com>
+	- Fixing ipv6 UDP firewalling rules
+	- Fixing IPv6 client routing block rules
+	- Added new IPV6LAN interface option
+
+0.4 - Brielle Bruns <bruns@2mbit.com>
+	- Added support for pre-run commands
+	- Fixed several bugs with NAT commands
