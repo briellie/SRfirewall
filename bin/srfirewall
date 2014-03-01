@@ -60,7 +60,7 @@ if [[ "${EnableIPv4}" == "yes" ]]; then
 	
 	# Create the chain sets we'll need and the ones that can be
 	# customized by users in their custom rules
-
+	setup_iptables_chains ipv4
 	
 
 fi
