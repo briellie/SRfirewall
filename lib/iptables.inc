@@ -105,10 +105,10 @@ function setup_iptables_chains {
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
 	${display} GREEN "Setting up NAT"
-	${VER_IPTABLES} -A POSTROUTING -j ${NAT}
+	${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
 	${display} GREEN "Setting up PortForward"
-	${VER_IPTABLES} -A PREROUTING -j ${PortForward}
+	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
 	${display} GREEN "Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
