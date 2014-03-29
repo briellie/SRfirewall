@@ -18,6 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 # iptables_rules_flush (ipv6|ipv4)
 # Clear all rules from iptables - be very careful in how this is called as it
 # could easily lock out the user from the network.  Best way to be safe, is to
