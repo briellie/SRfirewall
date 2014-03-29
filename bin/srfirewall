@@ -66,4 +66,8 @@ fi
 if [[ "${EnableIPv6}" == "yes" ]]; then
 	# First flush all rules
 	iptables_rules_flush ipv6
+	
+	# Create the chain sets we'll need and the ones that can be
+	# customized by users in their custom rules
+	setup_iptables_chains ipv6
 fi
