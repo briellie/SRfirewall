@@ -84,22 +84,34 @@ function setup_iptables_chains {
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh; fi
+	${display} GREEN "Setting up InPreRules"
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
+	${display} GREEN "Setting up OutPreRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh; fi
+	${display} GREEN "Setting up Trusted"
 	${VER_IPTABLES} -A INPUT -j ${Trusted}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
+	${display} GREEN "Setting up InEasyBlock"
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
+	${display} GREEN "Setting up OutEasyBlock"
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh; fi
+	${display} GREEN "Setting up InFilter"
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
+	${display} GREEN "Setting up OutFilter"
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
+	${display} GREEN "Setting up FwdFilter"
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
+	${display} GREEN "Setting up NAT"
 	${VER_IPTABLES} -A POSTROUTING -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
+	${display} GREEN "Setting up PortForward"
 	${VER_IPTABLES} -A PREROUTING -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
+	${display} GREEN "Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
+	${display} GREEN "Setting up OutPostRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
 }
