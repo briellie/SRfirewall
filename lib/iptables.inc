@@ -83,23 +83,23 @@ function setup_iptables_chains {
 	
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
-	if [ -x ${v${IPVER}_Custom_Pre} ]; then . ${v${IPVER}_Custom_Pre}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh; fi
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
-	if [ -x ${v${IPVER}_Custom_Trust} ]; then . ${v${IPVER}_Custom_Trust}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh; fi
 	${VER_IPTABLES} -A INPUT -j ${Trusted}
-	if [ -x ${v${IPVER}_Custom_EasyBlock} ]; then . ${v${IPVER}_Custom_EasyBlock}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
-	if [ -x ${v${IPVER}_Custom_Filter} ]; then . ${v${IPVER}_Custom_Filter}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh; fi
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
-	if [ -x ${v${IPVER}_Custom_NAT} ]; then . ${v${IPVER}_Custom_NAT}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
 	${VER_IPTABLES} -A POSTROUTING -j ${NAT}
-	if [ -x ${v${IPVER}_Custom_PortFw} ]; then . ${v${IPVER}_Custom_PortFw}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
 	${VER_IPTABLES} -A PREROUTING -j ${PortForward}
-	if [ -x ${v${IPVER}_Custom_Post} ]; then . ${v${IPVER}_Custom_Post}; fi
+	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
 	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
 }
