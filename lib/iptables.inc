@@ -60,54 +60,45 @@ function iptables_policy_reset {
 function setup_iptables_chains {
 	IP_VERSION=$1
 	case $IP_VERSION in
-		ipv6) VER_IPTABLES=${IP6TABLES} ;;
-		ipv4|*) VER_IPTABLES=${IPTABLES} ;;
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
 	esac
 	# Create the actual chains
 	${display_c} GREEN "Setting up chains for ${IP_VERSION}..."
-	${VER_IPTABLES} -N ${InCustomPreRules}
 	${VER_IPTABLES} -N ${InPreRules}
-	${VER_IPTABLES} -N ${OutCustomPreRules}
 	${VER_IPTABLES} -N ${OutPreRules}
 	${VER_IPTABLES} -N ${Trusted}
 	${VER_IPTABLES} -N ${InEasyBlock}
 	${VER_IPTABLES} -N ${OutEasyBlock}
-	${VER_IPTABLES} -N ${InCustomFilter}
 	${VER_IPTABLES} -N ${InFilter}
-	${VER_IPTABLES} -N ${OutCustomFilter}
 	${VER_IPTABLES} -N ${OutFilter}
-	${VER_IPTABLES} -N ${FwdCustomFilter}
 	${VER_IPTABLES} -N ${FwdFilter}
-	${VER_IPTABLES} -N ${CustomPostRouting}
 	${VER_IPTABLES} -N ${NAT}
-	${VER_IPTABLES} -N ${CustomPreRouting}
 	${VER_IPTABLES} -N ${PortForward}
-	${VER_IPTABLES} -N ${InCustomPostRules}
 	${VER_IPTABLES} -N ${InPostRules}
-	${VER_IPTABLES} -N ${OutCustomPostRules}
 	${VER_IPTABLES} -N ${OutPostRules}
 	
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
-	${VER_IPTABLES} -A INPUT -j ${InCustomPreRules}
+	if [ -x ${v${IPVER}_Custom_Pre} ]; then . ${v${IPVER}_Custom_Pre}; fi
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
-	${VER_IPTABLES} -A OUTPUT -j ${OutCustomPreRules}
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
+	if [ -x ${v${IPVER}_Custom_Trust} ]; then . ${v${IPVER}_Custom_Trust}; fi
 	${VER_IPTABLES} -A INPUT -j ${Trusted}
+	if [ -x ${v${IPVER}_Custom_EasyBlock} ]; then . ${v${IPVER}_Custom_EasyBlock}; fi
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
-	${VER_IPTABLES} -A INPUT -j ${InCustomFilter}
+	if [ -x ${v${IPVER}_Custom_Filter} ]; then . ${v${IPVER}_Custom_Filter}; fi
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
-	${VER_IPTABLES} -A OUTPUT -j ${OutCustomFilter}
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
-	${VER_IPTABLES} -A FORWARD -j ${FwdCustomFilter}
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
-	${VER_IPTABLES} -A POSTROUTING -j ${CustomPostRouting}
+	if [ -x ${v${IPVER}_Custom_NAT} ]; then . ${v${IPVER}_Custom_NAT}; fi
 	${VER_IPTABLES} -A POSTROUTING -j ${NAT}
-	${VER_IPTABLES} -A PREROUTING -j ${CustomPreRouting}
+	if [ -x ${v${IPVER}_Custom_PortFw} ]; then . ${v${IPVER}_Custom_PortFw}; fi
 	${VER_IPTABLES} -A PREROUTING -j ${PortForward}
-	${VER_IPTABLES} -A INPUT -j ${InCustomPostRules}
+	if [ -x ${v${IPVER}_Custom_Post} ]; then . ${v${IPVER}_Custom_Post}; fi
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
-	${VER_IPTABLES} -A OUTPUT -j ${OutCustomPostRules}
-	${VER_IPTABLES} -A OUTPUT -j${OutPostRules}
+	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
 }
