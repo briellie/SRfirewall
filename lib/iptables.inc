@@ -76,8 +76,8 @@ function setup_iptables_chains {
 	${VER_IPTABLES} -N ${InFilter}
 	${VER_IPTABLES} -N ${OutFilter}
 	${VER_IPTABLES} -N ${FwdFilter}
-	${VER_IPTABLES} -N ${NAT}
-	${VER_IPTABLES} -N ${PortForward}
+	${VER_IPTABLES} -N ${NAT} -t nat
+	${VER_IPTABLES} -N ${PortForward} -t nat
 	${VER_IPTABLES} -N ${InPostRules}
 	${VER_IPTABLES} -N ${OutPostRules}
 	
