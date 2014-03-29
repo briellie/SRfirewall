@@ -29,7 +29,7 @@ function iptables_rules_flush {
 		ipv6) VER_IPTABLES=${IP6TABLES} ; TABLE_NAMES=/proc/net/ip6_tables_names ;;
 		ipv4|*) VER_IPTABLES=${IPTABLES} ; TABLE_NAMES=/proc/net/ip_tables_names ;;
 	esac
-	${display_c} RED "Flushing ${IP_VERSION} rules..."
+	${display} RED "Flushing ${IP_VERSION} rules..."
 	${VER_IPTABLES} --flush &>/dev/null
 	${VER_IPTABLES} -F OUTPUT &>/dev/null
 	${VER_IPTABLES} -F PREROUTING &>/dev/null
@@ -67,7 +67,7 @@ function setup_iptables_chains {
 				IPVER="4" ;;
 	esac
 	# Create the actual chains
-	${display_c} GREEN "Setting up chains for ${IP_VERSION}..."
+	${display} GREEN "Setting up chains for ${IP_VERSION}..."
 	${VER_IPTABLES} -N ${InPreRules}
 	${VER_IPTABLES} -N ${OutPreRules}
 	${VER_IPTABLES} -N ${Trusted}
