@@ -142,6 +142,7 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	setup_iptables_chains ipv4
 	
 	if [ "${AllowAllv4Loopback}" == "yes" ]; then allow_all_loopback ipv4; fi
+	if [ "${EnableTrustedv4Hosts}" == "yes" ]; then allow_trusted_hosts ipv4; fi
 fi
 
 # Do IPv4 IPTables Rules
@@ -154,5 +155,6 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	setup_iptables_chains ipv6
 	
 	if [ "${AllowAllv6Loopback}" == "yes" ]; then allow_all_loopback ipv6; fi
+	if [ "${EnableTrustedv6Hosts}" == "yes" ]; then allow_trusted_hosts ipv6; fi
 fi
 

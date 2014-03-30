@@ -132,3 +132,25 @@ function allow_all_loopback {
 	${VER_IPTABLES} -A ${InPreRules} -i lo -j ACCEPT
 	${VER_IPTABLES} -A ${OutPreRules} -o lo -j ACCEPT
 }
+
+function allow_trusted_hosts {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "allow_trusted_hosts: loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/trusted.conf" ]; then
+		for i in `grep -v "\#" "${FWCONFIGDIR}/ipv${IPVER}/trusted.conf"`; do
+			${VER_IPTABLES} -A ${InPreRules} -s $i -j ACCEPT
+			${VER_IPTABLES} -A ${OutPreRules} -d $i -j ACCEPT
+		done
+		${debug} ${DebugColor} "allow_trusted_hosts: done"
+	else
+		${display} RED "File Missing: ${FWCONFIGDIR}/ipv${IPVER}/trusted.conf"
+		${display} RED "Error: can not load trusted hosts file."
+		${debug} ${DebugColor} "allow_trusted_hosts: failed"
+	fi
+}
