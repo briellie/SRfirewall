@@ -164,15 +164,17 @@ function enable_mss_clamp {
 	esac
 	${debug} ${DebugColor} "${FUNCNAME}: loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf" ]; then
-	while read -r interface mss type; do
-        [[ ${interface} = \#* ]] && continue
-		[ ${mss} == "-" ] && mss="1400:1536"
-		[ ${type} == "-" ] && type="${OutFilter}"
-		[ ${type} == "out" ] && type="${OutFilter}"
-		[ ${type} == "fwd" ] && type="${FwdFilter}"
-		${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf successful"
+		while read -r interface mss type; do
+			[[ ${interface} = \#* ]] && continue
+			[[ ${mss} == "-" ]] && mss="1400:1536"
+			[[ ${type} == "-" ]] && type="${OutFilter}"
+			[[ ${type} == "out" ]] && type="${OutFilter}"
+			[[ ${type} == "fwd" ]] && type="${FwdFilter}"
+			${debug} ${DebugColor} "${FUNCNAME}: Read: ${interface} ${mss} ${type}"
+			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 				--clamp-mss-to-pmtu -o $i -m tcpmss --mss ${mss}
-	done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
+		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
 		${debug} ${DebugColor} "${FUNCNAME}: done"
 	else
