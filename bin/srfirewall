@@ -28,10 +28,11 @@ FWLIBDIR="${FWPREFIX}/lib/srfirewall"
 FWBINDIR="${FWPREFIX}/bin"
 
 # Begin sourcing critical files, because we need things like path right away
-source "${FWCONFIGDIR}/main.conf"
 source "${FWLIBDIR}/binaries.inc"
 source "${FWLIBDIR}/iptables.inc"
 source "${FWLIBDIR}/display.inc"
+
+source "${FWCONFIGDIR}/main.conf"
 
 source "${FWCONFIGDIR}/chains.conf"
 source "${FWCONFIGDIR}/ipv4.conf"
@@ -54,6 +55,56 @@ else
 	display="true"
 fi
 
+# Swap out display_c command for dummy command if they don't want
+# debug output when command is run.
+if [[ "${DisplayDebugInfo}" == "yes" ]]; then
+	debug="display_c"
+else
+	debug="true"
+fi
+
+#if [ "$UID" != "0" ] && [ "${DebugOverride}" != "yes" ]; then
+#	${display} RED "You must be root to run this script."
+#	exit 2
+#fi
+
+if [ ! -x "${IPTABLES}" ] && [ "${EnableIPv4}" == "yes" ] && [ "${DebugOverride}" != "yes" ]; then
+	${display} RED "iptables command not found.  Please make sure you have the iptables"
+	${display} RED "installed (package or source) and you have the IPTABLES option properly"
+	${display} RED "defined in the 'main.conf' file if needed."
+	exit 3
+fi
+
+
+if [ ! -x "${IP6TABLES}" ] && [ "${EnableIPv6}" == "yes" ] && [ "${DebugOverride}" != "yes" ]; then
+	${display} RED "ip6tables command not found.  Please make sure you have the iptables"
+	${display} RED "installed (package or source) and you have the IP6TABLES option properly"
+	${display} RED "defined in the 'main.conf' file if needed."
+	exit 3
+fi
+
+if [ ! -e "/proc/net/ip_tables_names" ] && [ "${EnableIPv4}" == "yes" ] && [ "${DebugOverride}" != "yes" ]; then
+	${display} RED "IPv4 Netfilter modules do not appear to be loaded.  Attempting to load now..."
+	if ! `${MODPROBE} ${IP4TablesMod} &>/dev/null`; then
+		${display} RED "Module ${IP4TablesMod} failed to load."
+		${display} RED "Will continue with IPv4 disabled."
+		EnableIPv4="no"
+	else
+		${display} GREEN "Module successfully loaded."
+	fi
+fi
+
+if [ ! -e "/proc/net/ip6_tables_names" ] && [ "${EnableIPv6}" == "yes" ] && [ "${DebugOverride}" != "yes" ]; then
+	${display} RED "IPv6 Netfilter modules do not appear to be loaded.  Attempting to load now..."
+	if ! `${MODPROBE} ${IP6TablesMod} &>/dev/null`; then
+		${display} RED "Module ${IP6TablesMod} failed to load."
+		${display} RED "Will continue with IPv6 disabled."
+		EnableIPv6="no"
+	else
+		${display} GREEN "Module successfully loaded."
+	fi
+fi
+
 if [[ "${EnableIPv4}" == "yes" ]]; then
 	# First flush all rules
 	iptables_rules_flush ipv4
@@ -71,3 +122,4 @@ if [[ "${EnableIPv6}" == "yes" ]]; then
 	# customized by users in their custom rules
 	setup_iptables_chains ipv6
 fi
+

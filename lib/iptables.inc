@@ -84,34 +84,34 @@ function setup_iptables_chains {
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh; fi
-	${display} GREEN "Setting up InPreRules"
+	${debug} PURPLE "Setting up InPreRules"
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
-	${display} GREEN "Setting up OutPreRules"
+	${debug} PURPLE "Setting up OutPreRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh; fi
-	${display} GREEN "Setting up Trusted"
+	${debug} PURPLE "Setting up Trusted"
 	${VER_IPTABLES} -A INPUT -j ${Trusted}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
-	${display} GREEN "Setting up InEasyBlock"
+	${debug} PURPLE "Setting up InEasyBlock"
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
-	${display} GREEN "Setting up OutEasyBlock"
+	${debug} PURPLE "Setting up OutEasyBlock"
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh; fi
-	${display} GREEN "Setting up InFilter"
+	${debug} PURPLE "Setting up InFilter"
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
-	${display} GREEN "Setting up OutFilter"
+	${debug} PURPLE "Setting up OutFilter"
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
-	${display} GREEN "Setting up FwdFilter"
+	${debug} PURPLE "Setting up FwdFilter"
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
-	${display} GREEN "Setting up NAT"
+	${debug} PURPLE "Setting up NAT"
 	${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
-	${display} GREEN "Setting up PortForward"
+	${debug} PURPLE "Setting up PortForward"
 	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
-	${display} GREEN "Setting up InPostRules"
+	${debug} PURPLE "Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
-	${display} GREEN "Setting up OutPostRules"
+	${debug} PURPLE "Setting up OutPostRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
 }
