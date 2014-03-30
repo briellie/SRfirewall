@@ -30,14 +30,22 @@ function iptables_rules_flush {
 		ipv4|*) VER_IPTABLES=${IPTABLES} ; TABLE_NAMES=/proc/net/ip_tables_names ;;
 	esac
 	${display} GREEN "Flushing ${IP_VERSION} rules..."
-	${VER_IPTABLES} --flush &>/dev/null
+	${VER_IPTABLES} -F &>/dev/null
+	${VER_IPTABLES} -X &>/dev/null
+	${VER_IPTABLES} -F INPUT &>/dev/null
 	${VER_IPTABLES} -F OUTPUT &>/dev/null
-	${VER_IPTABLES} -F PREROUTING &>/dev/null
-	${VER_IPTABLES} -F POSTROUTING &>/dev/null
-	for i in `cat $TABLE_NAMES`; do
-		${VER_IPTABLES} -F -t $i &>/dev/null
-	done
-	${VER_IPTABLES} -X
+	${VER_IPTABLES} -F FORWARD &>/dev/null
+	${VER_IPTABLES} -t nat -F &>/dev/null
+	${VER_IPTABLES} -t nat -X &>/dev/null
+	${VER_IPTABLES} -t mangle -F &>/dev/null
+	${VER_IPTABLES} -t mangle -X &>/dev/null
+	${VER_IPTABLES} -P INPUT ACCEPT &>/dev/null
+	${VER_IPTABLES} -P OUTPUT ACCEPT &>/dev/null
+	${VER_IPTABLES} -P FORWARD ACCEPT &>/dev/null
+	#for i in `cat $TABLE_NAMES`; do
+	#	${VER_IPTABLES} -F -t $i &>/dev/null
+	#done
+	#${VER_IPTABLES} -X
 }
 
 # iptables_policy_set (ipv6|ipv4) (ACCEPT|DROP)
