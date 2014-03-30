@@ -78,7 +78,6 @@ function setup_iptables_chains {
 	${display} GREEN "Setting up chains for ${IP_VERSION}..."
 	${VER_IPTABLES} -N ${InPreRules}
 	${VER_IPTABLES} -N ${OutPreRules}
-	${VER_IPTABLES} -N ${Trusted}
 	${VER_IPTABLES} -N ${InEasyBlock}
 	${VER_IPTABLES} -N ${OutEasyBlock}
 	${VER_IPTABLES} -N ${InFilter}
@@ -96,9 +95,6 @@ function setup_iptables_chains {
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
 	${debug} ${DebugColor} "Setting up OutPreRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
-	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh; fi
-	${debug} ${DebugColor} "Setting up Trusted"
-	${VER_IPTABLES} -A INPUT -j ${Trusted}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
 	${debug} ${DebugColor} "Setting up InEasyBlock"
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
