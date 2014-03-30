@@ -29,7 +29,7 @@ function iptables_rules_flush {
 		ipv6) VER_IPTABLES=${IP6TABLES} ; TABLE_NAMES=/proc/net/ip6_tables_names ;;
 		ipv4|*) VER_IPTABLES=${IPTABLES} ; TABLE_NAMES=/proc/net/ip_tables_names ;;
 	esac
-	${display} RED "Flushing ${IP_VERSION} rules..."
+	${display} GREEN "Flushing ${IP_VERSION} rules..."
 	${VER_IPTABLES} --flush &>/dev/null
 	${VER_IPTABLES} -F OUTPUT &>/dev/null
 	${VER_IPTABLES} -F PREROUTING &>/dev/null
@@ -84,34 +84,47 @@ function setup_iptables_chains {
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh; fi
-	${debug} PURPLE "Setting up InPreRules"
+	${debug} ${DebugColor} "Setting up InPreRules"
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
-	${debug} PURPLE "Setting up OutPreRules"
+	${debug} ${DebugColor} "Setting up OutPreRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/trusted.sh; fi
-	${debug} PURPLE "Setting up Trusted"
+	${debug} ${DebugColor} "Setting up Trusted"
 	${VER_IPTABLES} -A INPUT -j ${Trusted}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
-	${debug} PURPLE "Setting up InEasyBlock"
+	${debug} ${DebugColor} "Setting up InEasyBlock"
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
-	${debug} PURPLE "Setting up OutEasyBlock"
+	${debug} ${DebugColor} "Setting up OutEasyBlock"
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh; fi
-	${debug} PURPLE "Setting up InFilter"
+	${debug} ${DebugColor} "Setting up InFilter"
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
-	${debug} PURPLE "Setting up OutFilter"
+	${debug} ${DebugColor} "Setting up OutFilter"
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
-	${debug} PURPLE "Setting up FwdFilter"
+	${debug} ${DebugColor} "Setting up FwdFilter"
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
-	${debug} PURPLE "Setting up NAT"
+	${debug} ${DebugColor} "Setting up NAT"
 	${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
-	${debug} PURPLE "Setting up PortForward"
+	${debug} ${DebugColor} "Setting up PortForward"
 	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
-	${debug} PURPLE "Setting up InPostRules"
+	${debug} ${DebugColor} "Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
-	${debug} PURPLE "Setting up OutPostRules"
+	${debug} ${DebugColor} "Setting up OutPostRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
+}
+
+function allow_all_loopback {
+	IP_VERSION=$1
+	case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "allow_all_loopback: loaded"
+	${VER_IPTABLES} -A ${InPreRules} -i lo -j ACCEPT
+	${VER_IPTABLES} -A ${OutPreRules} -o lo -j ACCEPT
 }

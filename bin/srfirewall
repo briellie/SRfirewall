@@ -49,16 +49,24 @@ fi
 
 # Swap out display_c command for dummy command if they don't want
 # output when command is run.
-if [[ "${DisplayDetailedOutput}" == "yes" ]]; then
-	display="display_c"
-else
+if [ "${DisplayDetailedOutput}" == "yes" ]; then
+	if [ "${ColorizeOut}" == "yes" ]; then
+		display="display_c"
+	else
+		display="display_m"
+	fi
+	else
 	display="true"
 fi
 
 # Swap out display_c command for dummy command if they don't want
 # debug output when command is run.
-if [[ "${DisplayDebugInfo}" == "yes" ]]; then
-	debug="display_c"
+if [ "${DisplayDebugInfo}" == "yes" ]; then
+	if [ "${ColorizeOut}" == "yes" ]; then
+		debug="display_c"
+	else
+		debug="display_m"
+	fi
 else
 	debug="true"
 fi
@@ -68,6 +76,8 @@ fi
 #	exit 2
 #fi
 
+
+# Basic sanity tests for ip{6}tables binaries and modules
 if [ ! -x "${IPTABLES}" ] && [ "${EnableIPv4}" == "yes" ] && [ "${DebugOverride}" != "yes" ]; then
 	${display} RED "iptables command not found.  Please make sure you have the iptables"
 	${display} RED "installed (package or source) and you have the IPTABLES option properly"
@@ -105,21 +115,44 @@ if [ ! -e "/proc/net/ip6_tables_names" ] && [ "${EnableIPv6}" == "yes" ] && [ "$
 	fi
 fi
 
-if [[ "${EnableIPv4}" == "yes" ]]; then
+# Set up proper state matching variables, since there is old and new style.
+if [ "$StateMatching" ]; then
+	case $StateMatching in
+		conntrack|CONNTRACK|*)
+			M_STATE="-m conntrack"
+			C_STATE="--ctstate"
+			;;
+		state|STATE)
+			M_STATE="-m state"
+			C_STATE="--state"
+	esac
+else
+	M_STATE="-m conntrack"
+	C_STATE="--ctstate"
+fi
+
+
+# Do IPv4 IPTables Rules
+if [ "${EnableIPv4}" == "yes" ]; then
 	# First flush all rules
 	iptables_rules_flush ipv4
 	
 	# Create the chain sets we'll need and the ones that can be
 	# customized by users in their custom rules
 	setup_iptables_chains ipv4
+	
+	if [ "${AllowAllv4Loopback}" == "yes" ]; then allow_all_loopback ipv4; fi
 fi
 
-if [[ "${EnableIPv6}" == "yes" ]]; then
+# Do IPv4 IPTables Rules
+if [ "${EnableIPv6}" == "yes" ]; then
 	# First flush all rules
 	iptables_rules_flush ipv6
 	
 	# Create the chain sets we'll need and the ones that can be
 	# customized by users in their custom rules
 	setup_iptables_chains ipv6
+	
+	if [ "${AllowAllv6Loopback}" == "yes" ]; then allow_all_loopback ipv6; fi
 fi
 

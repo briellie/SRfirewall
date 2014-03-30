@@ -45,6 +45,16 @@ function display_c {
 	echo -e ${NEWLINE} "${COLOR_CODE}${TEXT}${DEFAULT_COLOR}"
 }
 
+# Monochrome version of above
+function display_m {
+	unset TEXT NEWLINE
+	TEXT="$2"
+	if [ "$3" == "N" ]; then
+		NEWLINE="-n"
+	fi
+	echo -e $NEWLINE "$TEXT"
+}
+
 # pick_color $COLOR
 # returns appropriate color codes for use in display_c and such
 function pick_color {
