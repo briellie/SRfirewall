@@ -150,6 +150,7 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	[ "${EnableTrustedv4Hosts}" == "yes" ] && allow_trusted_hosts ipv4
 	[ "${Enablev4MSSClamp}" == "yes" ] && enable_mss_clamp ipv4
 	[ "${DNSClientUsev4ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv4
+	[ "${DNSClientManualv4Servers}" ] && allow_dnsclient_manual ipv4 ${DNSClientManualv4Servers}
 fi
 
 # Do IPv6 IPTables Rules
@@ -158,12 +159,13 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	iptables_rules_flush ipv6
 	
 	# Create the chain sets we'll need and the ones that can be
-	# customized by users in their custom rules 
+	# customized by users in their custom rules
 	setup_iptables_chains ipv6
 	
 	[ "${AllowAllv6Loopback}" == "yes" ] && allow_all_loopback ipv6
 	[ "${EnableTrustedv6Hosts}" == "yes" ] && allow_trusted_hosts ipv6
 	[ "${Enablev6MSSClamp}" == "yes" ] && enable_mss_clamp ipv6
 	[ "${DNSClientUsev6ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv6
+	[ "${DNSClientManualv6Servers}" ] && allow_dnsclient_manual ipv6 ${DNSClientManualv6Servers}
 fi
 

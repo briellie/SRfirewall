@@ -206,4 +206,25 @@ function allow_resolvconf_servers {
 		${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
 	done < "${ResolvConfFile}"
+	${debug} ${DebugColor} "${FUNCNAME}: done"
+}
+
+function allow_dnsclient_manual {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	DNS_SERVERS="$2-"
+	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	for i in ${DNS_SERVERS}; do
+		${debug} ${DebugColor} "${FUNCNAME}: Added ${i} to DNS client trusted list"
+		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
+		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
+		${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
+		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
+	done
+	${debug} ${DebugColor} "${FUNCNAME}: done"
 }
