@@ -173,7 +173,7 @@ function enable_mss_clamp {
 			[[ ${type} == "fwd" ]] && type="${FwdFilter}"
 			${debug} ${DebugColor} "${FUNCNAME}: Read: ${interface} ${mss} ${type}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-				--clamp-mss-to-pmtu -o $i -m tcpmss --mss ${mss}
+				--clamp-mss-to-pmtu -o ${interface} -m tcpmss --mss ${mss}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
 		${debug} ${DebugColor} "${FUNCNAME}: done"
