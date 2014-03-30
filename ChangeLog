@@ -1,9 +1,10 @@
 2.00 Alpha 1
 	- Complete code rewrite and restructure to solve some long standing issues with v1
 	- Separate out functions into support files for easier grouping of what they do
-	- Make more compatible with debian filesystem layout, including separating out into
-		/etc/firewall-sosdg for configs only, /usr/sbin for actual scripts, and
-		/usr/lib/firewall-sosdg for include/functions/etc that don't belong in config
+	- Make more compatible with multiple disto file layouts
+	- Basic functionality implemented:
+		- Trusted IP source (IPv4/IPv6) - 3/30/2014
+		- MSS Clamping (IPv4/IPv6) - 3/30/2014
 		
 =-=-=-=-= PRE 2.0 REWRITE =-=-=-=-=
 1.1 - Brielle Bruns <bruns@2mbit.com>

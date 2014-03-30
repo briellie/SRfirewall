@@ -183,3 +183,27 @@ function enable_mss_clamp {
 		${debug} ${DebugColor} "${FUNCNAME}: failed"
 	fi
 }
+
+function allow_resolvconf_servers {
+		IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	[[ ${IP_VERSION} = "ipv4" ]] && ResolvConfFile="${ResolvConfv4File}"
+	[[ ${IP_VERSION} = "ipv6" ]] && ResolvConfFile="${ResolvConfv6File}"
+	${debug} ${DebugColor} "${FUNCNAME}: Using ${ResolvConfFile} as resolv.conf"
+	while read -r type server; do
+		[[ ${type} != "nameserver" ]] && continue
+		# If we see a : in the server variable, we are most likely dealing with an ipv6 address
+		([[ ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv4" ]]) && continue
+		${debug} ${DebugColor} "${FUNCNAME}: Added ${server} to DNS client trusted list"
+		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
+		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
+		${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
+		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
+	done < "${ResolvConfFile}"
+}
