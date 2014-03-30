@@ -91,32 +91,32 @@ function setup_iptables_chains {
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh; fi
-	${debug} ${DebugColor} "Setting up InPreRules"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up InPreRules"
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
-	${debug} ${DebugColor} "Setting up OutPreRules"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutPreRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
-	${debug} ${DebugColor} "Setting up InEasyBlock"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up InEasyBlock"
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
-	${debug} ${DebugColor} "Setting up OutEasyBlock"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutEasyBlock"
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh; fi
-	${debug} ${DebugColor} "Setting up InFilter"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up InFilter"
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
-	${debug} ${DebugColor} "Setting up OutFilter"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutFilter"
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
-	${debug} ${DebugColor} "Setting up FwdFilter"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up FwdFilter"
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
-	${debug} ${DebugColor} "Setting up NAT"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up NAT"
 	${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
-	${debug} ${DebugColor} "Setting up PortForward"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up PortForward"
 	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
-	${debug} ${DebugColor} "Setting up InPostRules"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
-	${debug} ${DebugColor} "Setting up OutPostRules"
+	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutPostRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
 }
 
@@ -141,16 +141,43 @@ function allow_trusted_hosts {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	${debug} ${DebugColor} "allow_trusted_hosts: loading"
+	${debug} ${DebugColor} "${FUNCNAME}: loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/trusted.conf" ]; then
 		for i in `grep -v "\#" "${FWCONFIGDIR}/ipv${IPVER}/trusted.conf"`; do
 			${VER_IPTABLES} -A ${InPreRules} -s $i -j ACCEPT
 			${VER_IPTABLES} -A ${OutPreRules} -d $i -j ACCEPT
 		done
-		${debug} ${DebugColor} "allow_trusted_hosts: done"
+		${debug} ${DebugColor} "${FUNCNAME}: done"
 	else
 		${display} RED "File Missing: ${FWCONFIGDIR}/ipv${IPVER}/trusted.conf"
 		${display} RED "Error: can not load trusted hosts file."
-		${debug} ${DebugColor} "allow_trusted_hosts: failed"
+		${debug} ${DebugColor} "${FUNCNAME}: failed"
+	fi
+}
+function enable_mss_clamp {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf" ]; then
+	while read -r interface mss type; do
+        [[ ${interface} = \#* ]] && continue
+		[ ${mss} == "-" ] && mss="1400:1536"
+		[ ${type} == "-" ] && type="${OutFilter}"
+		[ ${type} == "out" ] && type="${OutFilter}"
+		[ ${type} == "fwd" ] && type="${FwdFilter}"
+		${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+				--clamp-mss-to-pmtu -o $i -m tcpmss --mss ${mss}
+	done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
+
+		${debug} ${DebugColor} "${FUNCNAME}: done"
+	else
+		${display} RED "File Missing: ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
+		${display} RED "Error: can not load mss clamp file."
+		${debug} ${DebugColor} "${FUNCNAME}: failed"
 	fi
 }

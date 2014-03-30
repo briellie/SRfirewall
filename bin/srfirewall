@@ -76,6 +76,11 @@ fi
 #	exit 2
 #fi
 
+# We can't function without certain cli binaries being available
+if [ ! -x "${GREP}" ]; then
+	${display} RED "Error: grep command not found.  Please define GREP variable in main.conf manually."
+	exit 3
+fi
 
 # Basic sanity tests for ip{6}tables binaries and modules
 if [ ! -x "${IPTABLES}" ] && [ "${EnableIPv4}" == "yes" ] && [ "${DebugOverride}" != "yes" ]; then
@@ -141,11 +146,12 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	# customized by users in their custom rules
 	setup_iptables_chains ipv4
 	
-	if [ "${AllowAllv4Loopback}" == "yes" ]; then allow_all_loopback ipv4; fi
-	if [ "${EnableTrustedv4Hosts}" == "yes" ]; then allow_trusted_hosts ipv4; fi
+	[ "${AllowAllv4Loopback}" == "yes" ] && allow_all_loopback ipv4
+	[ "${EnableTrustedv4Hosts}" == "yes" ] && allow_trusted_hosts ipv4
+	[ "${Enablev4MSSClamp}" == "yes" ] && enable_mss_clamp ipv4
 fi
 
-# Do IPv4 IPTables Rules
+# Do IPv6 IPTables Rules
 if [ "${EnableIPv6}" == "yes" ]; then
 	# First flush all rules
 	iptables_rules_flush ipv6
@@ -154,7 +160,8 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	# customized by users in their custom rules
 	setup_iptables_chains ipv6
 	
-	if [ "${AllowAllv6Loopback}" == "yes" ]; then allow_all_loopback ipv6; fi
-	if [ "${EnableTrustedv6Hosts}" == "yes" ]; then allow_trusted_hosts ipv6; fi
+	[ "${AllowAllv6Loopback}" == "yes" ] && allow_all_loopback ipv6
+	[ "${EnableTrustedv6Hosts}" == "yes" ] && allow_trusted_hosts ipv6
+	[ "${Enablev6MSSClamp}" == "yes" ] && enable_mss_clamp ipv6
 fi
 
