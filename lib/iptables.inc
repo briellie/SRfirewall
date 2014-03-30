@@ -217,7 +217,7 @@ function allow_dnsclient_manual {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	DNS_SERVERS="$2-"
+	DNS_SERVERS="$2"
 	${debug} ${DebugColor} "${FUNCNAME}: loading"
 	for i in ${DNS_SERVERS}; do
 		${debug} ${DebugColor} "${FUNCNAME}: Added ${i} to DNS client trusted list"
