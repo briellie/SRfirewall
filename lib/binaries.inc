@@ -23,5 +23,5 @@ MODPROBE=`which modprobe`
 IPTABLES=`which iptables`
 IP6TABLES=`which ip6tables`
 
-IPTablesMod="ip_tables"
+IP4TablesMod="ip_tables"
 IP6TablesMod="ip6_tables"
