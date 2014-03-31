@@ -200,7 +200,7 @@ function allow_resolvconf_servers {
 		[[ ${type} != "nameserver" ]] && continue
 		# If we see a : in the server variable, we are most likely dealing with an ipv6 address
 		([[ ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv4" ]]) && continue
-		([[ ${server} !~ ":" ]] && [[ ${IP_VERSION} = "ipv6" ]]) && continue
+		([[ ! ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv6" ]]) && continue
 		${debug} ${DebugColor} "${FUNCNAME}: Added ${server} to DNS client trusted list"
 		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
