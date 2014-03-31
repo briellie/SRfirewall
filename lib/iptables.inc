@@ -200,6 +200,7 @@ function allow_resolvconf_servers {
 		[[ ${type} != "nameserver" ]] && continue
 		# If we see a : in the server variable, we are most likely dealing with an ipv6 address
 		([[ ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv4" ]]) && continue
+		([[ ${server} !~ ":" ]] && [[ ${IP_VERSION} = "ipv6" ]]) && continue
 		${debug} ${DebugColor} "${FUNCNAME}: Added ${server} to DNS client trusted list"
 		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
@@ -227,4 +228,42 @@ function allow_dnsclient_manual {
 		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
 	done
 	${debug} ${DebugColor} "${FUNCNAME}: done"
+}
+
+function enable_easyblock {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf" ]; then
+		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf successful"
+		while read -r direction interface address port; do
+			[[ ${direction} = \#* ]] && continue
+			
+			# Do some creative work with variables to make building the iptables rules fairly painless
+			[[ ${port} != "-" ]] && port="--dport ${port}"
+			([[ ${address} != "-" ]] && [[ ${direction} == "IN" ]] && address="-s ${address}"
+			([[ ${address} != "-" ]] && [[ ${direction} == "OUT" ]] && address="-d ${address}"
+			([[ ${interface} != "-" ]] && [[ ${direction} == "IN" ]] && interface="-i ${interface}"
+			([[ ${interface} != "-" ]] && [[ ${direction} == "OUT" ]] && interface="-o ${interface}"
+			[[ ${direction} == "OUT" ]] && chain="${OutEasyBlock}"
+			[[ ${direction} == "IN" ]] && chain="${InEasyBlock}"
+			
+			${debug} ${DebugColor} "${FUNCNAME}: Read: ${direction} ${interface} ${address} ${port}"
+			
+			# Blank variables that we're not going to use.
+			[[ ${interface} == "-" ]] && interface=""
+			[[ ${port} == "-" ]] && port=""
+			[[ ${address} == "-" ]] && address=""
+			
+			
+			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${port}
+		done < "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf"
+
+		${debug} ${DebugColor} "${FUNCNAME}: done"
+	
 }
