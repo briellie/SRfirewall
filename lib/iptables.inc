@@ -241,7 +241,7 @@ function enable_easyblock {
 	${debug} ${DebugColor} "${FUNCNAME}: loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf successful"
-		while read -r direction interface address port; do
+		while read -r direction interface address port protocol; do
 			[[ ${direction} = \#* ]] && continue
 			
 			# Do some creative work with variables to make building the iptables rules fairly painless
@@ -252,16 +252,18 @@ function enable_easyblock {
 			([[ ${interface} != "-" ]] && [[ ${direction} == "OUT" ]] && interface="-o ${interface}"
 			[[ ${direction} == "OUT" ]] && chain="${OutEasyBlock}"
 			[[ ${direction} == "IN" ]] && chain="${InEasyBlock}"
+			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			
-			${debug} ${DebugColor} "${FUNCNAME}: Read: ${direction} ${interface} ${address} ${port}"
+			${debug} ${DebugColor} "${FUNCNAME}: Read: ${direction} ${interface} ${address} ${port} ${protocol}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${interface} == "-" ]] && interface=""
 			[[ ${port} == "-" ]] && port=""
 			[[ ${address} == "-" ]] && address=""
+			[[ ${protocol} == "-" ]] && protocol=""
 			
 			
-			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${port}
+			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${protocol} ${port}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf"
 
 		${debug} ${DebugColor} "${FUNCNAME}: done"
