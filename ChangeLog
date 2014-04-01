@@ -6,6 +6,7 @@
 		- Trusted IP source (IPv4/IPv6) - 3/30/2014
 		- MSS Clamping (IPv4/IPv6) - 3/30/2014
 		- Trusted DNS server as client (IPv4/IPv6) - 3/30/2014
+		- Easy Block functionality (IPv4/IPv6) - 3/31/2014
 		
 =-=-=-=-= PRE 2.0 REWRITE =-=-=-=-=
 1.1 - Brielle Bruns <bruns@2mbit.com>
