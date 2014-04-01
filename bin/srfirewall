@@ -169,6 +169,6 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[ "${Enablev6MSSClamp}" == "yes" ] && enable_mss_clamp ipv6
 	[ "${DNSClientUsev6ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv6
 	[ "${DNSClientManualv6Servers}" ] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
-	[ "${Enablev6EasyBlock" == "yes" ] && enable_easyblock ipv6
+	[ "${Enablev6EasyBlock}" == "yes" ] && enable_easyblock ipv6
 fi
 

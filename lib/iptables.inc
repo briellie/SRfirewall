@@ -167,6 +167,7 @@ function enable_mss_clamp {
 		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf successful"
 		while read -r interface mss type; do
 			[[ ${interface} = \#* ]] && continue
+			[[ ${interface} = "" ]] && continue
 			[[ ${mss} == "-" ]] && mss="1400:1536"
 			[[ ${type} == "-" ]] && type="${OutFilter}"
 			[[ ${type} == "out" ]] && type="${OutFilter}"
@@ -198,6 +199,7 @@ function allow_resolvconf_servers {
 	${debug} ${DebugColor} "${FUNCNAME}: Using ${ResolvConfFile} as resolv.conf"
 	while read -r type server; do
 		[[ ${type} != "nameserver" ]] && continue
+		[[ ${type} = "" ]] && continue
 		# If we see a : in the server variable, we are most likely dealing with an ipv6 address
 		([[ ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv4" ]]) && continue
 		([[ ! ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv6" ]]) && continue
@@ -243,13 +245,14 @@ function enable_easyblock {
 		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf successful"
 		while read -r direction interface address port protocol; do
 			[[ ${direction} = \#* ]] && continue
+			[[ ${direction} = "" ]] && continue
 			
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${port} != "-" ]] && port="--dport ${port}"
-			([[ ${address} != "-" ]] && [[ ${direction} == "IN" ]] && address="-s ${address}"
-			([[ ${address} != "-" ]] && [[ ${direction} == "OUT" ]] && address="-d ${address}"
-			([[ ${interface} != "-" ]] && [[ ${direction} == "IN" ]] && interface="-i ${interface}"
-			([[ ${interface} != "-" ]] && [[ ${direction} == "OUT" ]] && interface="-o ${interface}"
+			([[ ${address} != "-" ]] && [[ ${direction} == "IN" ]]) && address="-s ${address}"
+			([[ ${address} != "-" ]] && [[ ${direction} == "OUT" ]]) && address="-d ${address}"
+			([[ ${interface} != "-" ]] && [[ ${direction} == "IN" ]]) && interface="-i ${interface}"
+			([[ ${interface} != "-" ]] && [[ ${direction} == "OUT" ]]) && interface="-o ${interface}"
 			[[ ${direction} == "OUT" ]] && chain="${OutEasyBlock}"
 			[[ ${direction} == "IN" ]] && chain="${InEasyBlock}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
@@ -262,10 +265,9 @@ function enable_easyblock {
 			[[ ${address} == "-" ]] && address=""
 			[[ ${protocol} == "-" ]] && protocol=""
 			
-			
 			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${protocol} ${port}
+			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf"
-
 		${debug} ${DebugColor} "${FUNCNAME}: done"
-	
+	fi
 }
