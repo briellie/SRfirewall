@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Static config options, normally do not need to change
-FW_VERSION="2.0"
+FW_VERSION="2.0 PreAlpha 1"
 
 # Important directory locations
 FWPREFIX="/usr/local"
@@ -47,6 +47,8 @@ if (( ${BASH_VERSINFO[0]} <= "2" )); then
 	exit 1
 fi
 
+
+
 # Swap out display_c command for dummy command if they don't want
 # output when command is run.
 if [ "${DisplayDetailedOutput}" == "yes" ]; then
@@ -59,7 +61,7 @@ if [ "${DisplayDetailedOutput}" == "yes" ]; then
 	display="true"
 fi
 
-# Swap out display_c command for dummy command if they don't want
+# Swap out debug command for dummy command if they don't want
 # debug output when command is run.
 if [ "${DisplayDebugInfo}" == "yes" ]; then
 	if [ "${ColorizeOut}" == "yes" ]; then
@@ -70,6 +72,23 @@ if [ "${DisplayDebugInfo}" == "yes" ]; then
 else
 	debug="true"
 fi
+
+# Parse command line args
+while getopts "hfgv" opt; do
+  case $opt in
+    h)
+      show_help
+	  exit 0
+      ;;
+	v)
+	  show_version
+	  exit 0
+	  ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
 
 #if [ "$UID" != "0" ] && [ "${DebugOverride}" != "yes" ]; then
 #	${display} RED "You must be root to run this script."

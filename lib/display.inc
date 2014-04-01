@@ -85,8 +85,19 @@ function reset_color {
 # show_help
 # Show command line options help
 function show_help {
-	 echo "Firewall/SOSDG ${FW_VERSION} - Brielle Bruns <bruns@2mbit.com>"
- 	 echo -e "\t--help\t\tShows this info"
- 	 echo -e "\t--flush\t\tFlushes all rules back to default ACCEPT"
- 	 echo -e "\t--generate-cache\tGenerate cached rule file"
+	 ${display} DEFAULT_COLOR "SRFirewall ${FW_VERSION}"
+	 ${display} DEFAULT_COLOR "\n${0} -[fghv]\n"
+ 	 ${display} DEFAULT_COLOR "\t-f\tFlushes all rules back to default ACCEPT"
+ 	 ${display} DEFAULT_COLOR "\t-g\tGenerate cached rule files (not implemented yet)"
+	 ${display} DEFAULT_COLOR "\t-h\tShows this help"
+	 ${display} DEFAULT_COLOR "\t-v\tShow version"
  }
+ 
+ function show_version {
+	${display} DEFAULT_COLOR "SRFirewall ${FW_VERSION}"
+	${display} DEFAULT_COLOR "Written by: Brielle Bruns <bruns@2mbit.com>"
+	${display} DEFAULT_COLOR "http://www.sosdg.org/freestuff/firewall"
+	${display} DEFAULT_COLOR "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+	${display} DEFAULT_COLOR "Released under the GNU GPL Version 3"
+	${display} DEFAULT_COLOR "https://www.gnu.org/licenses/gpl-3.0.txt"
+}
