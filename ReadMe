@@ -1,17 +1,36 @@
-SRFirewall v2.0
-http://www.sosdg.org/freestuff/firewall
-Written by: Brielle Bruns <bruns@2mbit.com>
+SRFirewall v2.0 http://www.sosdg.org/freestuff/firewall Written by:
+Brielle Bruns <bruns@2mbit.com>
 
-SRFirewall is a complete rewrite of Firewall/SOSDG v1.1, from scratch, with a completely new and reorganized config and file layout.
+SRFirewall is a complete rewrite of Firewall/SOSDG v1.1, from scratch,
+with a completely new and reorganized config and file layout.
+
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-I've spent years manually configuring and building scripts for new machines, usually single use.  The existing firewall scripts, like ipkungfu, were great, but either lacked features, or lacked IPv6 support.  I'd have to spend days working around oddities and hacking in support for new features.
 
-It wasn't until around 2009 that I decided to stop the constant 'reinventing the wheel' and make a single package that suited my needs well, and could be reused when needed.  The result was Firewall/SOSDG - a firewall script, written completely in bash scripting, and could run on most distros with the least amount of hassle.
+I've spent years manually configuring and building scripts for new
+machines, usually single use.  The existing firewall scripts, like
+ipkungfu, were great, but either lacked features, or lacked IPv6
+support.  I'd have to spend days working around oddities and hacking in
+support for new features.
 
-Sure, it was rather clumsy, and I had to rework config files multiple times to add support for new features - but, in the end, it was something that I built to my needs.
+It wasn't until around 2009 that I decided to stop the constant
+'reinventing the wheel' and make a single package that suited my needs
+well, and could be reused when needed.  The result was Firewall/SOSDG -
+a firewall script, written completely in bash scripting, and could run
+on most distros with the least amount of hassle.
 
-Fast forward to v1.0.  The script had matured, was functional, but had some major issues with design that just wouldn't work well in the long term.  I put off any kind of redesign for a while, eventually quietly releasing v1.1 to fix some minor bugs.  No further changes have been done since, as I have no desire to keep maintaining that old code.
+Sure, it was rather clumsy, and I had to rework config files multiple
+times to add support for new features - but, in the end, it was
+something that I built to my needs.
 
-I was going to release a v2.0 of the script, reengineer the main config system but keep the same general backend script.  After looking through the code, I got frustrated and decided the time was right to start over.
+Fast forward to v1.0.  The script had matured, was functional, but had
+some major issues with design that just wouldn't work well in the long
+term.  I put off any kind of redesign for a while, eventually quietly
+releasing v1.1 to fix some minor bugs.  No further changes have been
+done since, as I have no desire to keep maintaining that old code.
 
-Enter SRFirewall - a new name chosen because I wanted something new to represent the work I would be putting into rebuilding the code.
+I was going to release a v2.0 of the script, reengineer the main config
+system but keep the same general backend script.  After looking through
+the code, I got frustrated and decided the time was right to start over.
+
+Enter SRFirewall - a new name chosen because I wanted something new to
+represent the work I would be putting into rebuilding the code.
