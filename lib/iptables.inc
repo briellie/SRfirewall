@@ -91,32 +91,32 @@ function setup_iptables_chains {
 	# Set up rules - the order matters - we do it separately here
 	# for easy viewing of order
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/prerun.sh; fi
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up InPreRules"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up InPreRules"
 	${VER_IPTABLES} -A INPUT -j ${InPreRules}
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutPreRules"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up OutPreRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPreRules}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/easyblock.sh; fi
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up InEasyBlock"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up InEasyBlock"
 	${VER_IPTABLES} -A INPUT -j ${InEasyBlock}
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutEasyBlock"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up OutEasyBlock"
 	${VER_IPTABLES} -A OUTPUT -j ${OutEasyBlock}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/filter.sh; fi
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up InFilter"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up InFilter"
 	${VER_IPTABLES} -A INPUT -j ${InFilter}
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutFilter"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up OutFilter"
 	${VER_IPTABLES} -A OUTPUT -j ${OutFilter}
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up FwdFilter"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up FwdFilter"
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up NAT"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up NAT"
 	${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up PortForward"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up PortForward"
 	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up InPostRules"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
-	${debug} ${DebugColor} "${FUNCNAME}: Setting up OutPostRules"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up OutPostRules"
 	${VER_IPTABLES} -A OUTPUT -j ${OutPostRules}
 }
 
@@ -128,7 +128,7 @@ function allow_all_loopback {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	${debug} ${DebugColor} "allow_all_loopback: loaded"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loaded"
 	${VER_IPTABLES} -A ${InPreRules} -i lo -j ACCEPT
 	${VER_IPTABLES} -A ${OutPreRules} -o lo -j ACCEPT
 }
@@ -141,17 +141,17 @@ function allow_trusted_hosts {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/trusted.conf" ]; then
 		for i in `grep -v "\#" "${FWCONFIGDIR}/ipv${IPVER}/trusted.conf"`; do
 			${VER_IPTABLES} -A ${InPreRules} -s $i -j ACCEPT
 			${VER_IPTABLES} -A ${OutPreRules} -d $i -j ACCEPT
 		done
-		${debug} ${DebugColor} "${FUNCNAME}: done"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	else
 		${display} RED "File Missing: ${FWCONFIGDIR}/ipv${IPVER}/trusted.conf"
 		${display} RED "Error: can not load trusted hosts file."
-		${debug} ${DebugColor} "${FUNCNAME}: failed"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} failed"
 	fi
 }
 function enable_mss_clamp {
@@ -162,9 +162,9 @@ function enable_mss_clamp {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf" ]; then
-		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf successful"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf successful"
 		while read -r interface mss type; do
 			[[ ${interface} = \#* ]] && continue
 			[[ ${interface} = "" ]] && continue
@@ -172,16 +172,16 @@ function enable_mss_clamp {
 			[[ ${type} == "-" ]] && type="${OutFilter}"
 			[[ ${type} == "out" ]] && type="${OutFilter}"
 			[[ ${type} == "fwd" ]] && type="${FwdFilter}"
-			${debug} ${DebugColor} "${FUNCNAME}: Read: ${interface} ${mss} ${type}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 				--clamp-mss-to-pmtu -o ${interface} -m tcpmss --mss ${mss}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
-		${debug} ${DebugColor} "${FUNCNAME}: done"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	else
 		${display} RED "File Missing: ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 		${display} RED "Error: can not load mss clamp file."
-		${debug} ${DebugColor} "${FUNCNAME}: failed"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} failed"
 	fi
 }
 
@@ -193,23 +193,23 @@ function allow_resolvconf_servers {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	[[ ${IP_VERSION} = "ipv4" ]] && ResolvConfFile="${ResolvConfv4File}"
 	[[ ${IP_VERSION} = "ipv6" ]] && ResolvConfFile="${ResolvConfv6File}"
-	${debug} ${DebugColor} "${FUNCNAME}: Using ${ResolvConfFile} as resolv.conf"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Using ${ResolvConfFile} as resolv.conf"
 	while read -r type server; do
 		[[ ${type} != "nameserver" ]] && continue
 		[[ ${type} = "" ]] && continue
 		# If we see a : in the server variable, we are most likely dealing with an ipv6 address
 		([[ ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv4" ]]) && continue
 		([[ ! ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv6" ]]) && continue
-		${debug} ${DebugColor} "${FUNCNAME}: Added ${server} to DNS client trusted list"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Added ${server} to DNS client trusted list"
 		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${server} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${server} --dport 1024:65535 --sport 53 -j ACCEPT
 	done < "${ResolvConfFile}"
-	${debug} ${DebugColor} "${FUNCNAME}: done"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 }
 
 function allow_dnsclient_manual {
@@ -221,15 +221,15 @@ function allow_dnsclient_manual {
 				IPVER="4" ;;
 	esac
 	DNS_SERVERS="$2"
-	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	for i in ${DNS_SERVERS}; do
-		${debug} ${DebugColor} "${FUNCNAME}: Added ${i} to DNS client trusted list"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Added ${i} to DNS client trusted list"
 		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
 		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
 	done
-	${debug} ${DebugColor} "${FUNCNAME}: done"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 }
 
 function enable_easyblock {
@@ -240,13 +240,15 @@ function enable_easyblock {
 		ipv4|*) VER_IPTABLES=${IPTABLES}
 				IPVER="4" ;;
 	esac
-	${debug} ${DebugColor} "${FUNCNAME}: loading"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf" ]; then
-		${debug} ${DebugColor} "${FUNCNAME}: read ${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf successful"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf successful"
 		while read -r direction interface address port protocol; do
 			[[ ${direction} = \#* ]] && continue
 			[[ ${direction} = "" ]] && continue
-			
+			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
+					&& ${display} RED "easyblock.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${interface} ${address} ${port} ${protocol}" && continue
+
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${port} != "-" ]] && port="--dport ${port}"
 			([[ ${address} != "-" ]] && [[ ${direction} == "IN" ]]) && address="-s ${address}"
@@ -257,7 +259,7 @@ function enable_easyblock {
 			[[ ${direction} == "IN" ]] && chain="${InEasyBlock}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			
-			${debug} ${DebugColor} "${FUNCNAME}: Read: ${direction} ${interface} ${address} ${port} ${protocol}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${direction} ${interface} ${address} ${port} ${protocol}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${interface} == "-" ]] && interface=""
@@ -268,6 +270,6 @@ function enable_easyblock {
 			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${protocol} ${port}
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf"
-		${debug} ${DebugColor} "${FUNCNAME}: done"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
 }

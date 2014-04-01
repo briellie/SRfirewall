@@ -20,15 +20,15 @@
 
 
 # ANSI color sequences
-BLUE="\E[34m"
-GREEN="\E[32m"
-RED="\E[31m"
-YELLOW="\E[33m"
-PURPLE="\E[35m"
-AQUA="\E[36m"
-WHITE="\E[1m"
-GREY="\E[37m"
-DEFAULT_COLOR="\E[39m"
+BLUE="\e[34m"
+GREEN="\e[32m"
+RED="\e[31m"
+YELLOW="\e[33m"
+PURPLE="\e[35m"
+AQUA="\e[36m"
+WHITE="\e[97m"
+GREY="\e[37m"
+DEFAULT_COLOR="\e[39m"
 
 # display_c $COLOR $TEXT BOOL(YN)
 # $COLOR being bash colors
