@@ -290,6 +290,8 @@ function enable_filtering {
 			[[ ${direction} = "" ]] && continue
 			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
 					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${dstaddress} ${dstport} ${srcaddress} ${srcport} ${protocol}" && continue
+			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
+					&& ${display} RED "acl.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${dstaddress} ${dstport} ${srcaddress} ${srcport} ${protocol}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
