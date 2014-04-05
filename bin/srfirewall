@@ -171,6 +171,7 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	[ "${DNSClientUsev4ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv4
 	[ "${DNSClientManualv4Servers}" ] && allow_dnsclient_manual ipv4 "${DNSClientManualv4Servers}"
 	[ "${Enablev4EasyBlock}" == "yes" ] && enable_easyblock ipv4
+	[ "${Enablev4Filtering}" == "yes" ] && enable_filtering ipv4
 	
 fi
 
@@ -189,5 +190,6 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[ "${DNSClientUsev6ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv6
 	[ "${DNSClientManualv6Servers}" ] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
 	[ "${Enablev6EasyBlock}" == "yes" ] && enable_easyblock ipv6
+	[ "${Enablev6Filtering}" == "yes" ] && enable_filtering ipv6
 fi
 

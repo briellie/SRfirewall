@@ -273,3 +273,21 @@ function enable_easyblock {
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
 }
+
+function enable_filtering {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/acl.conf" ]; then
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/acl.conf successful"
+		while read -r direction interface address port protocol; do
+	
+		done < "${FWCONFIGDIR}/ipv${IPVER}/acl.conf"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+	fi
+}
