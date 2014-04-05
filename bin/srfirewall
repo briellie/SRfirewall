@@ -172,6 +172,8 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	[ "${DNSClientManualv4Servers}" ] && allow_dnsclient_manual ipv4 "${DNSClientManualv4Servers}"
 	[ "${Enablev4EasyBlock}" == "yes" ] && enable_easyblock ipv4
 	[ "${Enablev4Filtering}" == "yes" ] && enable_filtering ipv4
+	#[ "${Enablev4Forwarding}" == "yes" ] && enable_forwarding ipv4
+	[ "${Enablev4NAT}" == "yes" ] && enable_nat ipv4
 	
 fi
 
@@ -191,5 +193,7 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[ "${DNSClientManualv6Servers}" ] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
 	[ "${Enablev6EasyBlock}" == "yes" ] && enable_easyblock ipv6
 	[ "${Enablev6Filtering}" == "yes" ] && enable_filtering ipv6
+	#[ "${Enablev6Forwarding}" == "yes" ] && enable_forwarding ipv6
+	[ "${Enablev6NAT}" == "yes" ] && enable_nat ipv6
 fi
 

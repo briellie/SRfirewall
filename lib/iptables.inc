@@ -319,3 +319,53 @@ function enable_filtering {
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
 }
+
+function enable_nat {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/nat.conf" ]; then
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/nat.conf successful"
+		while read -r type srcinterface srcaddress dstinterface dstaddress; do
+			[[ ${type} = \#* ]] && continue
+			[[ ${type} = "" ]] && continue
+			([[ ${type} != "SNAT" ]] && [[ ${type} != "MASQ" ]] && [[ ${type} != "NETMAP" ]]) \
+					&& ${display} RED "nat.conf: Error - must begin with SNAT/MASQ/NETMAP: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" && continue
+
+			# Do some creative work with variables to make building the iptables rules fairly painless
+			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
+			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
+			([[ ${srcaddresss} != "-" ]] && [[ ${type} != "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
+			
+			([[ ${dstinterface} != "-" ]] && [[ ${type} == "MASQ" ]]) && action="-j MASQUERADE"
+			([[ ${dstinterface} == "-" ]] && [[ ${type} == "MASQ" ]]) && \
+					${display} RED "nat.conf: Error - MASQ rule can not have empty destination interface: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" \
+					&& continue
+
+			([[ ${dstaddress} != "-" ]] && [[ ${type} == "SNAT" ]]) && action="-j SNAT" && dstaddress="--to-source ${dstaddress}"
+			([[ ${dstaddress} == "-" ]] && [[ ${type} == "SNAT" ]]) && \
+					${display} RED "nat.conf: Error - SNAT rule can not have empty destination address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" \
+					&& continue
+
+			([[ ${srcaddress} != "-" ]] && [[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && action="-j NETMAP" && srcaddress="-d ${srcaddress}" && dstaddress="--to ${dstaddress}"
+			
+			
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
+			
+			# Blank variables that we're not going to use.
+			[[ ${srcinterface} == "-" ]] && srcinterface=""
+			[[ ${dstinterface} == "-" ]] && dstinterface=""
+			[[ ${dstaddress} == "-" ]] && dstaddress=""
+			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			
+			${VER_IPTABLES} -A ${NAT} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${action}
+			${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
+			done < "${FWCONFIGDIR}/ipv${IPVER}/nat.conf"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+	fi
+}
