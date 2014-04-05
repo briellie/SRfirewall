@@ -267,7 +267,7 @@ function enable_easyblock {
 			[[ ${address} == "-" ]] && address=""
 			[[ ${protocol} == "-" ]] && protocol=""
 			
-			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${protocol} ${port}
+			${VER_IPTABLES} -A ${chain} ${interface} ${address} ${protocol} ${port} -j DROP
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/easyblock.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
@@ -285,8 +285,34 @@ function enable_filtering {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/acl.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/acl.conf successful"
-		while read -r direction interface address port protocol; do
-	
+		while read -r direction action interface srcaddress srcport dstaddress dstport protocol; do
+			[[ ${direction} = \#* ]] && continue
+			[[ ${direction} = "" ]] && continue
+			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
+					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${dstaddress} ${dstport} ${srcaddress} ${srcport} ${protocol}" && continue
+
+			# Do some creative work with variables to make building the iptables rules fairly painless
+			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
+			[[ ${srcport} != "-" ]] && srcport="--sport ${srcport}"
+			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
+			[[ ${dstaddress} != "-" ]] && dstaddress="-d ${dstaddress}"
+			([[ ${interface} != "-" ]] && [[ ${direction} == "IN" ]]) && interface="-i ${interface}"
+			([[ ${interface} != "-" ]] && [[ ${direction} == "OUT" ]]) && interface="-o ${interface}"
+			[[ ${direction} == "OUT" ]] && chain="${OutFilter}"
+			[[ ${direction} == "IN" ]] && chain="${InFilter}"
+			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
+			
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
+			
+			# Blank variables that we're not going to use.
+			[[ ${interface} == "-" ]] && interface=""
+			[[ ${dstport} == "-" ]] && dstport=""
+			[[ ${srcport} == "-" ]] && srcport=""
+			[[ ${dstaddress} == "-" ]] && dstaddress=""
+			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			[[ ${protocol} == "-" ]] && protocol=""
+			
+			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${dstaddress} ${dstport} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/acl.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
