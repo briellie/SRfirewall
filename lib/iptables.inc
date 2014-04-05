@@ -372,6 +372,9 @@ function enable_nat {
 				IPVER="4" ;;
 	esac
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	([[ ${IPVER} == "4" ]] && [[ ${Enablev4ConnectionTracking} != "yes" ]]) && ${display} RED "${FUNCNAME}: ERROR:${DEFAULT_COLOR} Unable to load NAT rules if Enablev4ConnectionTracking=no" && return 1
+	([[ ${IPVER} == "6" ]] && [[ ${Enablev6ConnectionTracking} != "yes" ]]) && ${display} RED "${FUNCNAME}: ERROR:${DEFAULT_COLOR} Unable to load NAT rules if Enablev6ConnectionTracking=no" && return 1
+
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/nat.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/nat.conf successful"
 		while read -r type srcinterface srcaddress dstinterface dstaddress; do
@@ -411,4 +414,5 @@ function enable_nat {
 			done < "${FWCONFIGDIR}/ipv${IPVER}/nat.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
+		
 }
