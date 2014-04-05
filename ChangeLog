@@ -8,6 +8,9 @@
 		- Trusted DNS server as client (IPv4/IPv6) - 3/30/2014
 		- Easy Block functionality (IPv4/IPv6) - 3/31/2014
 		- ACL/Filtering functionality (IPv4/IPv6) - 4/5/2014
+		- NAT/NETMAP functionality (IPv4/IPv6) - 4/5/2014
+				- IPv6 NAT/NETMAP is untested, have no internal use for it, let me know if works/doesnt
+		
 		
 =-=-=-=-= PRE 2.0 REWRITE =-=-=-=-=
 1.1 - Brielle Bruns <bruns@2mbit.com>
