@@ -289,9 +289,9 @@ function enable_filtering {
 			[[ ${direction} = \#* ]] && continue
 			[[ ${direction} = "" ]] && continue
 			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
-					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${dstaddress} ${dstport} ${srcaddress} ${srcport} ${protocol}" && continue
+					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
-					&& ${display} RED "acl.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${dstaddress} ${dstport} ${srcaddress} ${srcport} ${protocol}" && continue
+					&& ${display} RED "acl.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
@@ -316,6 +316,49 @@ function enable_filtering {
 			
 			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${dstaddress} ${dstport} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/acl.conf"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+	fi
+}
+
+function enable_forwarding {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/forward.conf" ]; then
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/forward.conf successful"
+		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional; do
+			[[ ${action} = \#* ]] && continue
+			[[ ${action} = "" ]] && continue
+			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
+					&& ${display} RED "acl.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${srcaddress}" && continue
+
+			# Do some creative work with variables to make building the iptables rules fairly painless
+			([[ ${bidirectional} == "yes" ]] && [[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${dstaddress} != "-" ]]) && revdstaddress="-s ${dstaddress}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${dstinterface} != "-" ]]) && revdstinterface="-i ${dstinterface}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${srcinterface} != "-" ]]) && revsrcinterface="-o ${srcinterface}"
+			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
+			[[ ${dstaddress} != "-" ]] && dstaddress="-d ${dstaddress}"
+			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
+			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
+			
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${srcaddress}"
+			
+			# Blank variables that we're not going to use.
+			[[ ${srcinterface} == "-" ]] && srcinterface=""
+			[[ ${dstinterface} == "-" ]] && dstinterface=""
+			[[ ${dstaddress} == "-" ]] && dstaddress=""
+			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			[[ ${bidirectional} == "-" ]] && bidirectional="no"
+			
+			${VER_IPTABLES} -A ${FwdFilter} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} -j ${action}
+			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${revsrcinterface} ${revsrcaddress} ${revdstinterface} ${revdstaddress} -j ${action}
+		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
 }
