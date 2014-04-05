@@ -204,12 +204,11 @@ function allow_resolvconf_servers {
 		([[ ! ${server} =~ ":" ]] && [[ ${IP_VERSION} = "ipv6" ]]) && continue
 		
 		use_conntrack="no"
-		(([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && use_conntrack="yes"
-		(([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && use_conntrack="yes"
-		
-		# If we see a : in the server variable, we are most likely dealing with an ipv6 address
+		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && use_conntrack="yes"
+		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && use_conntrack="yes"
+
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Added ${server} to DNS client trusted list"
-		if [[ ${use_conntrack} == "yes"]]; then
+		if [[ ${use_conntrack} == "yes" ]]; then
 			${VER_IPTABLES} -A ${OutPreRules} -p udp -d ${server} --dport 53 ${M_STATE} ${C_STATE} NEW,ESTABLISHED -j ACCEPT
 			${VER_IPTABLES} -A ${InPreRules} -p udp -s ${server} --sport 53 ${M_STATE} ${C_STATE} ESTABLISHED,RELATED -j ACCEPT
 		else
