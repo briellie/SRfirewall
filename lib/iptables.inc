@@ -340,9 +340,9 @@ function enable_nat {
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
-			([[ ${srcaddresss} != "-" ]] && [[ ${type} != "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
+			([[ ${srcaddress} != "-" ]] && [[ ${type} != "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
 			
-			([[ ${dstinterface} != "-" ]] && [[ ${type} == "MASQ" ]]) && action="-j MASQUERADE"
+			([[ ${dstinterface} != "-" ]] && [[ ${type} == "MASQ" ]]) && action="-j MASQUERADE" 
 			([[ ${dstinterface} == "-" ]] && [[ ${type} == "MASQ" ]]) && \
 					${display} RED "nat.conf: Error - MASQ rule can not have empty destination interface: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" \
 					&& continue
@@ -363,7 +363,7 @@ function enable_nat {
 			[[ ${dstaddress} == "-" ]] && dstaddress=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			
-			${VER_IPTABLES} -A ${NAT} ${srcaddress} ${action} ${dstinterface} ${dstaddress}
+			${VER_IPTABLES} -A ${NAT} -t nat ${srcaddress} ${action} ${dstinterface} ${dstaddress}
 			${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
 			done < "${FWCONFIGDIR}/ipv${IPVER}/nat.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
