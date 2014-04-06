@@ -552,7 +552,7 @@ function enable_portfw {
 			[[ ${address} == "-" ]] && address=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			
-			${VER_IPTABLES} -A ${PortForward} ${protocol} ${service} ${interface} ${address} ${srcaddress} -j DNAT ${intdst}
+			${VER_IPTABLES} -A ${PortForward} ${protocol} ${service} ${interface} ${address} ${srcaddress} -j DNAT ${intdest}
 			${VER_IPTABLES} -A ${InFilter} ${protocol} ${service} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf"
