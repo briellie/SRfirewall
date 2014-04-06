@@ -435,3 +435,44 @@ function enable_nat {
 	fi
 		
 }
+
+function enable_services {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/services.conf" ]; then
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/services.conf successful"
+		use_conntrack="no"
+		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
+		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
+		while read -r service protocol interface srcaddress; do
+			[[ ${service} = \#* ]] && continue
+			[[ ${service} = "" ]] && continue
+			[[ ${service} == "-" ]] \
+					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${srcaddress}" && continue
+			[[ ${protocol} == "-" ]] \
+					&& ${display} RED "service.conf: Error - protocol can not be empty: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${srcaddress}" && continue
+
+			# Do some creative work with variables to make building the iptables rules fairly painless
+			[[ ${service} != "-" ]] && service="--dport ${service}"
+			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
+			[[ ${interface} != "-" ]] && interface="-i ${interface}"
+			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
+			
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${service} ${protocol} ${interface} ${srcaddress}"
+			
+			# Blank variables that we're not going to use.
+			[[ ${interface} == "-" ]] && interface=""
+			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			
+			${VER_IPTABLES} -A ${InFilter} ${interface} ${address} ${protocol} ${port} ${conntrack_state} -j ACCEPT
+			
+		done < "${FWCONFIGDIR}/ipv${IPVER}/services.conf"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+	fi
+}
