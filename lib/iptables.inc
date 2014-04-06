@@ -309,8 +309,8 @@ function enable_filtering {
 			[[ ${direction} = "" ]] && continue
 			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
 					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
-			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
-					&& ${display} RED "acl.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
+			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]] && [[ ${action} != "REJECT" ]]) \
+					&& ${display} RED "acl.conf: Error - action must be either ACCEPT, DROP, or REJECT : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
@@ -322,6 +322,7 @@ function enable_filtering {
 			[[ ${direction} == "OUT" ]] && chain="${OutFilter}"
 			[[ ${direction} == "IN" ]] && chain="${InFilter}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
+			[[ ${action} == "REJECT" ]] && action="REJECT --reject-with tcp-reset"
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
 			
@@ -450,27 +451,31 @@ function enable_services {
 		use_conntrack="no"
 		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
 		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
-		while read -r service protocol interface srcaddress; do
+		while read -r service protocol interface address srcaddress; do
+			multiport="no"
 			[[ ${service} = \#* ]] && continue
 			[[ ${service} = "" ]] && continue
 			[[ ${service} == "-" ]] \
-					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${srcaddress}" && continue
+					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${address} ${srcaddress}" && continue
 			[[ ${protocol} == "-" ]] \
-					&& ${display} RED "service.conf: Error - protocol can not be empty: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${srcaddress}" && continue
-
+					&& ${display} RED "service.conf: Error - protocol can not be empty: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${address} ${srcaddress}" && continue
+			[[ ${service} =~ "," ]] && multiport="yes"
 			# Do some creative work with variables to make building the iptables rules fairly painless
-			[[ ${service} != "-" ]] && service="--dport ${service}"
+			([[ ${service} != "-" ]] && [[ ${multiport} != "yes" ]]) && service="--dport ${service}"
+			([[ ${service != "-" ]] && [[ ${multiport} == "yes" ]]) && service="-m multiport --dports ${service}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			[[ ${interface} != "-" ]] && interface="-i ${interface}"
+			[[ ${address} != "-" ]] && srcaddress="-d ${address}"
 			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
 			
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${service} ${protocol} ${interface} ${srcaddress}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${service} ${protocol} ${interface} ${address} ${srcaddress}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${interface} == "-" ]] && interface=""
+			[[ ${address} == "-" ]] && address=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			
-			${VER_IPTABLES} -A ${InFilter} ${interface} ${address} ${protocol} ${port} ${conntrack_state} -j ACCEPT
+			${VER_IPTABLES} -A ${InFilter} ${service} ${protocol} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/services.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
