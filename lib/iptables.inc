@@ -540,7 +540,7 @@ function enable_portfw {
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${service} != "-" ]]  && service="--dport ${service}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
-			[[ ${intip} != "-" ]] && intdest="--to ${intip}:${intport}"
+			[[ ${intip} != "-" ]] && intdest="--to-destination ${intip}:${intport}"
 			([[ ${interface} != "-" ]] && [[ ${interface} != "" ]]) && interface="-i ${interface}"
 			([[ ${address} != "-" ]] && [[ ${address} != "" ]]) && address="-d ${address}"
 			([[ ${srcaddress} != "-" ]] && [[ ${srcaddress} != "" ]]) && srcaddress="-s ${srcaddress}"
