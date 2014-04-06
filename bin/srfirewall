@@ -174,7 +174,7 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	setup_iptables_chains ipv4
 	
 	[[ ${AllowAllv4Loopback} == "yes" ]] && allow_all_loopback ipv4
-	[[ ${EnableTrustedv4Hosts} == "yes" ] && allow_trusted_hosts ipv4
+	[[ ${EnableTrustedv4Hosts} == "yes" ]] && allow_trusted_hosts ipv4
 	[[ ${Enablev4MSSClamp} == "yes" ]] && enable_mss_clamp ipv4
 	([[ ${Enablev4ConnTrackInterfaces} != "none" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) \
 			&& enable_conntrack_int ipv4 "${Enablev4ConnTrackInterfaces}"
@@ -200,7 +200,7 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[[ ${AllowAllv6Loopback} == "yes" ]] && allow_all_loopback ipv6
 	[[ ${EnableTrustedv6Hosts} == "yes" ]] && allow_trusted_hosts ipv6
 	[[ ${Enablev6MSSClamp} == "yes" ]] && enable_mss_clamp ipv6
-	([[ ${Enablev6ConnTrackInterfaces} != "none" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
+	(s[[ ${Enablev6ConnTrackInterfaces} != "none" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
 			&& enable_conntrack_int ipv6 "${Enablev6ConnTrackInterfaces}"
 	[[ ${DNSClientUsev6ResolvConf} == "yes" ]] && allow_resolvconf_servers ipv6
 	[[ ${DNSClientManualv6Servers} ]] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
