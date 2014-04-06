@@ -351,6 +351,9 @@ function enable_forwarding {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/forward.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/forward.conf successful"
+		use_conntrack="no"
+		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
+		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional; do
 			[[ ${action} = \#* ]] && continue
 			[[ ${action} = "" ]] && continue
@@ -376,8 +379,10 @@ function enable_forwarding {
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
 			
-			${VER_IPTABLES} -A ${FwdFilter} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} -j ${action}
-			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${revsrcinterface} ${revsrcaddress} ${revdstinterface} ${revdstaddress} -j ${action}
+			[[ ${action} == "DROP" ]] && conntrack_state=""
+			
+			${VER_IPTABLES} -A ${FwdFilter} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${conntrack_state} -j ${action}
+			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${revsrcinterface} ${revsrcaddress} ${revdstinterface} ${revdstaddress} ${conntrack_state} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
@@ -478,6 +483,35 @@ function enable_services {
 			${VER_IPTABLES} -A ${InFilter} ${protocol} ${service} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/services.conf"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+	fi
+}
+
+function enable_conntrack_int {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	conntrack_int="$2"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [[ ${conntrack_int} == "all" ]]; then
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Enabling conntrack on all interfaces"
+		${VER_IPTABLES} -A ${OutPreRules} ${M_STATE} ${C_STATE} ESTABLISHED,RELATED -j ACCEPT
+		${VER_IPTABLES} -A ${InPreRules} ${M_STATE} ${C_STATE} ESTABLISHED,RELATED -j ACCEPT
+		${VER_IPTABLES} -A ${OutPreRules} ${M_STATE} ${C_STATE} INVALID -j DROP
+		${VER_IPTABLES} -A ${InPreRules} ${M_STATE} ${C_STATE} INVALID -j DROP
+	else
+		for i in ${conntrack_int}; do
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Enabling conntrack on ${i}"
+			${VER_IPTABLES} -A ${OutPreRules} -o ${i} ${M_STATE} ${C_STATE} ESTABLISHED,RELATED -j ACCEPT
+			${VER_IPTABLES} -A ${InPreRules} -i ${i} ${M_STATE} ${C_STATE} ESTABLISHED,RELATED -j ACCEPT
+			${VER_IPTABLES} -A ${OutPreRules} -o ${i} ${M_STATE} ${C_STATE} INVALID -j DROP
+			${VER_IPTABLES} -A ${InPreRules} -i ${i} ${M_STATE} ${C_STATE} INVALID -j DROP
+		done
+	fi
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
 }
