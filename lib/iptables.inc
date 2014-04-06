@@ -462,7 +462,7 @@ function enable_services {
 			[[ ${service} =~ "," ]] && multiport="yes"
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			([[ ${service} != "-" ]] && [[ ${multiport} != "yes" ]]) && service="--dport ${service}"
-			([[ ${service != "-" ]] && [[ ${multiport} == "yes" ]]) && service="-m multiport --dports ${service}"
+			([[ ${service} != "-" ]] && [[ ${multiport} == "yes" ]]) && service="-m multiport --dports ${service}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			[[ ${interface} != "-" ]] && interface="-i ${interface}"
 			[[ ${address} != "-" ]] && srcaddress="-d ${address}"
