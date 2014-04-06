@@ -185,6 +185,7 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	[[ ${Enablev4Services} == "yes" ]] && enable_services ipv4
 	[[ ${Enablev4Forwarding} == "yes" ]] && enable_forwarding ipv4
 	[[ ${Enablev4NAT} == "yes" ]] && enable_nat ipv4
+	[[ ${Enablev4PortForwarding} == "yes" ]] && enable_portfw ipv4
 	
 fi
 
@@ -208,6 +209,7 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[[ ${Enablev6Filtering} == "yes" ]] && enable_filtering ipv6
 	[[ ${Enablev6Services} == "yes" ]] && enable_services ipv6
 	[[ ${Enablev6Forwarding} == "yes" ]] && enable_forwarding ipv6
-	[ "${Enablev6NAT}" == "yes" ] && enable_nat ipv6
+	[[ ${Enablev6NAT} == "yes" ]] && enable_nat ipv6
+	[[ ${Enablev6PortForwarding} == "yes" ]] && enable_portfw ipv6
 fi
 
