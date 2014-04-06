@@ -232,12 +232,21 @@ function allow_dnsclient_manual {
 	esac
 	DNS_SERVERS="$2"
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	use_conntrack="no"
+	([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && use_conntrack="yes"
+	([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && use_conntrack="yes"
 	for i in ${DNS_SERVERS}; do
-		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Added ${i} to DNS client trusted list"
-		${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
-		${VER_IPTABLES} -A ${InPreRules} -p udp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
-		${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
-		${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
+		if [[ ${use_conntrack} == "yes" ]]; then
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Added ${server} to conntrack list for DNS traffic"
+			${VER_IPTABLES} -A ${OutPreRules} -p udp -d ${i} --dport 53 ${M_STATE} ${C_STATE} NEW,ESTABLISHED -j ACCEPT
+			${VER_IPTABLES} -A ${InPreRules} -p udp -s ${i} --sport 53 ${M_STATE} ${C_STATE} ESTABLISHED,RELATED -j ACCEPT
+		else
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Added ${i} to DNS client trusted list"
+			${VER_IPTABLES} -A ${OutPreRules} -p udp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
+			${VER_IPTABLES} -A ${InPreRules} -p udp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
+			#${VER_IPTABLES} -A ${OutPreRules} -p tcp -s ${i} --sport 1024:65535 --dport 53 -j ACCEPT
+			#${VER_IPTABLES} -A ${InPreRules} -p tcp -d ${i} --dport 1024:65535 --sport 53 -j ACCEPT
+		fi
 	done
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 }

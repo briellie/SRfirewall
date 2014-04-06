@@ -38,6 +38,12 @@ source "${FWCONFIGDIR}/chains.conf"
 source "${FWCONFIGDIR}/ipv4.conf"
 source "${FWCONFIGDIR}/ipv6.conf"
 
+# The local.conf file can be used to override any of the above files without having to worry
+# about changes being overwritten when upgrading.  Mostly useful for people who use a package
+# manager.
+[[ -e "{FWCONFIGDIR}/local.conf" ]] && source "{FWCONFIGDIR}/local.conf"
+
+
 # We require at least bash v3 or later at this point given some of the more complex
 # operations we do to make the firewall script work.
 if (( ${BASH_VERSINFO[0]} <= "2" )); then
