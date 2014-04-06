@@ -514,3 +514,48 @@ function enable_conntrack_int {
 	fi
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 }
+
+function enable_portfw {
+	IP_VERSION=$1
+		case $IP_VERSION in
+		ipv6) VER_IPTABLES=${IP6TABLES};
+				IPVER="6" ;;
+		ipv4|*) VER_IPTABLES=${IPTABLES}
+				IPVER="4" ;;
+	esac
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf" ]; then
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/portfw.conf successful"
+		use_conntrack="no"
+		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
+		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
+		while read -r service protocol intip intport interface address srcaddress; do
+			[[ ${service} = \#* ]] && continue
+			[[ ${service} = "" ]] && continue
+			[[ ${service} == "-" ]] \
+					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${intip} ${intport} ${protocol} ${interface} ${address} ${srcaddress}" && continue
+			[[ ${protocol} == "-" ]] \
+					&& ${display} RED "service.conf: Error - protocol can not be empty: ${DEFAULT_COLOR}${service} ${intip} ${intport} ${protocol} ${interface} ${address} ${srcaddress}" && continue
+
+			# Do some creative work with variables to make building the iptables rules fairly painless
+			[[ ${service} != "-" ]]  && service="--dport ${service}"
+			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
+			[[ ${intip} != "-" ]] && intdest="--to ${intip}:${intport}"
+			([[ ${interface} != "-" ]] && [[ ${interface} != "" ]]) && interface="-i ${interface}"
+			([[ ${address} != "-" ]] && [[ ${address} != "" ]]) && address="-d ${address}"
+			([[ ${srcaddress} != "-" ]] && [[ ${srcaddress} != "" ]]) && srcaddress="-s ${srcaddress}"
+			
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${service} ${protocol} ${intip} ${intport} ${interface} ${address} ${srcaddress}"
+			
+			# Blank variables that we're not going to use.
+			[[ ${interface} == "-" ]] && interface=""
+			[[ ${address} == "-" ]] && address=""
+			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			
+			${VER_IPTABLES} -A ${PortForward} ${protocol} ${service} ${interface} ${address} ${srcaddress} -j DNAT ${intdst}
+			${VER_IPTABLES} -A ${InFilter} ${protocol} ${service} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
+			
+		done < "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf"
+		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+	fi
+}
