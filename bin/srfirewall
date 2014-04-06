@@ -200,7 +200,7 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[[ ${AllowAllv6Loopback} == "yes" ]] && allow_all_loopback ipv6
 	[[ ${EnableTrustedv6Hosts} == "yes" ]] && allow_trusted_hosts ipv6
 	[[ ${Enablev6MSSClamp} == "yes" ]] && enable_mss_clamp ipv6
-	(s[[ ${Enablev6ConnTrackInterfaces} != "none" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
+	([[ ${Enablev6ConnTrackInterfaces} != "none" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
 			&& enable_conntrack_int ipv6 "${Enablev6ConnTrackInterfaces}"
 	[[ ${DNSClientUsev6ResolvConf} == "yes" ]] && allow_resolvconf_servers ipv6
 	[[ ${DNSClientManualv6Servers} ]] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
