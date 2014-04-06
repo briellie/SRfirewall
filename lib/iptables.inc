@@ -513,5 +513,4 @@ function enable_conntrack_int {
 		done
 	fi
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
-	fi
 }
