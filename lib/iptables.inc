@@ -475,7 +475,7 @@ function enable_services {
 			[[ ${address} == "-" ]] && address=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			
-			${VER_IPTABLES} -A ${InFilter} ${service} ${protocol} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
+			${VER_IPTABLES} -A ${InFilter} ${protocol} ${service} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/services.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
