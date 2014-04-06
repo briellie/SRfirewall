@@ -42,6 +42,8 @@ source "${FWCONFIGDIR}/ipv6.conf"
 # about changes being overwritten when upgrading.  Mostly useful for people who use a package
 # manager.
 [[ -e "{FWCONFIGDIR}/local.conf" ]] && source "{FWCONFIGDIR}/local.conf"
+[[ -e "{FWCONFIGDIR}/ipv4/local.conf" ]] && source "{FWCONFIGDIR}/ipv4/local.conf"
+[[ -e "{FWCONFIGDIR}/ipv6/local.conf" ]] && source "{FWCONFIGDIR}/ipv6/local.conf"
 
 
 # We require at least bash v3 or later at this point given some of the more complex
@@ -178,6 +180,7 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	[ "${DNSClientManualv4Servers}" ] && allow_dnsclient_manual ipv4 "${DNSClientManualv4Servers}"
 	[ "${Enablev4EasyBlock}" == "yes" ] && enable_easyblock ipv4
 	[ "${Enablev4Filtering}" == "yes" ] && enable_filtering ipv4
+	[ "${Enablev4Services}" == "yes" ] && enable_services ipv4
 	[ "${Enablev4Forwarding}" == "yes" ] && enable_forwarding ipv4
 	[ "${Enablev4NAT}" == "yes" ] && enable_nat ipv4
 	
@@ -199,6 +202,7 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[ "${DNSClientManualv6Servers}" ] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
 	[ "${Enablev6EasyBlock}" == "yes" ] && enable_easyblock ipv6
 	[ "${Enablev6Filtering}" == "yes" ] && enable_filtering ipv6
+	[ "${Enablev6Services}" == "yes" ] && enable_services ipv6
 	[ "${Enablev6Forwarding}" == "yes" ] && enable_forwarding ipv6
 	[ "${Enablev6NAT}" == "yes" ] && enable_nat ipv6
 fi
