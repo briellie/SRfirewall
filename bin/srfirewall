@@ -173,16 +173,18 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	# customized by users in their custom rules
 	setup_iptables_chains ipv4
 	
-	[ "${AllowAllv4Loopback}" == "yes" ] && allow_all_loopback ipv4
-	[ "${EnableTrustedv4Hosts}" == "yes" ] && allow_trusted_hosts ipv4
-	[ "${Enablev4MSSClamp}" == "yes" ] && enable_mss_clamp ipv4
-	[ "${DNSClientUsev4ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv4
-	[ "${DNSClientManualv4Servers}" ] && allow_dnsclient_manual ipv4 "${DNSClientManualv4Servers}"
-	[ "${Enablev4EasyBlock}" == "yes" ] && enable_easyblock ipv4
-	[ "${Enablev4Filtering}" == "yes" ] && enable_filtering ipv4
-	[ "${Enablev4Services}" == "yes" ] && enable_services ipv4
-	[ "${Enablev4Forwarding}" == "yes" ] && enable_forwarding ipv4
-	[ "${Enablev4NAT}" == "yes" ] && enable_nat ipv4
+	[[ ${AllowAllv4Loopback} == "yes" ]] && allow_all_loopback ipv4
+	[[ ${EnableTrustedv4Hosts} == "yes" ] && allow_trusted_hosts ipv4
+	[[ ${Enablev4MSSClamp} == "yes" ]] && enable_mss_clamp ipv4
+	([[ ${Enablev4ConnTrackInterfaces} != "none" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) \
+			&& enable_conntrack_int ipv4 "${Enablev4ConnTrackInterfaces}"
+	[[ ${DNSClientUsev4ResolvConf} == "yes" ]] && allow_resolvconf_servers ipv4
+	[[ ${DNSClientManualv4Servers} ]] && allow_dnsclient_manual ipv4 "${DNSClientManualv4Servers}"
+	[[ ${Enablev4EasyBlock} == "yes" ]] && enable_easyblock ipv4
+	[[ ${Enablev4Filtering} == "yes" ]] && enable_filtering ipv4
+	[[ ${Enablev4Services} == "yes" ]] && enable_services ipv4
+	[[ ${Enablev4Forwarding} == "yes" ]] && enable_forwarding ipv4
+	[[ ${Enablev4NAT} == "yes" ]] && enable_nat ipv4
 	
 fi
 
@@ -195,15 +197,17 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	# customized by users in their custom rules
 	setup_iptables_chains ipv6
 	
-	[ "${AllowAllv6Loopback}" == "yes" ] && allow_all_loopback ipv6
-	[ "${EnableTrustedv6Hosts}" == "yes" ] && allow_trusted_hosts ipv6
-	[ "${Enablev6MSSClamp}" == "yes" ] && enable_mss_clamp ipv6
-	[ "${DNSClientUsev6ResolvConf}" == "yes" ] && allow_resolvconf_servers ipv6
-	[ "${DNSClientManualv6Servers}" ] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
-	[ "${Enablev6EasyBlock}" == "yes" ] && enable_easyblock ipv6
-	[ "${Enablev6Filtering}" == "yes" ] && enable_filtering ipv6
-	[ "${Enablev6Services}" == "yes" ] && enable_services ipv6
-	[ "${Enablev6Forwarding}" == "yes" ] && enable_forwarding ipv6
+	[[ ${AllowAllv6Loopback} == "yes" ]] && allow_all_loopback ipv6
+	[[ ${EnableTrustedv6Hosts} == "yes" ]] && allow_trusted_hosts ipv6
+	[[ ${Enablev6MSSClamp} == "yes" ]] && enable_mss_clamp ipv6
+	([[ ${Enablev6ConnTrackInterfaces} != "none" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
+			&& enable_conntrack_int ipv6 "${Enablev6ConnTrackInterfaces}"
+	[[ ${DNSClientUsev6ResolvConf} == "yes" ]] && allow_resolvconf_servers ipv6
+	[[ ${DNSClientManualv6Servers} ]] && allow_dnsclient_manual ipv6 "${DNSClientManualv6Servers}"
+	[[ ${Enablev6EasyBlock} == "yes" ]] && enable_easyblock ipv6
+	[[ ${Enablev6Filtering} == "yes" ]] && enable_filtering ipv6
+	[[ ${Enablev6Services} == "yes" ]] && enable_services ipv6
+	[[ ${Enablev6Forwarding} == "yes" ]] && enable_forwarding ipv6
 	[ "${Enablev6NAT}" == "yes" ] && enable_nat ipv6
 fi
 
