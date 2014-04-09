@@ -16,6 +16,7 @@
 		- Deps on Enablev(4|6)ConnectionTracking for NAT functionality - 4/5/2014
 		- Service functionality (IPv4/IPv6) 4/6/2014
 		- Port forwarding functionality (IPv4/IPv6) 4/6/2014
+	- Add somewhat crude Debian package files, will need to be worked on...  - 4/8/2014
 		
 =-=-=-=-= PRE 2.0 REWRITE =-=-=-=-=
 1.1 - Brielle Bruns <bruns@2mbit.com>
