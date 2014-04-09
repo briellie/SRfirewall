@@ -1,0 +1,8 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: srfirewall
+Source: http://code.google.com/p/firewall-sosdg
+
+Files: *
+Copyright: 2008-2014 Brielle Bruns
+License: GPL-3
+ Please see /usr/share/common-licenses/GPL-3 for details.

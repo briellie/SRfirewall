@@ -1,0 +1,24 @@
+Index: srfirewall-2.0a1+svn20140408/Makefile
+===================================================================
+--- srfirewall-2.0a1+svn20140408.orig/Makefile	2014-04-08 19:49:20.440285374 -0600
++++ srfirewall-2.0a1+svn20140408/Makefile	2014-04-08 19:49:31.160360827 -0600
+@@ -1,14 +1,14 @@
+-PREFIX=/usr/local
++PREFIX=/usr
+ 
+ all: # Nothing here
+ 
+ install:
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/srfirewall \
+-	$(DESTDIR)$(PREFIX)/etc/srfirewall
++	$(DESTDIR)/etc/srfirewall
+ 	cp -r bin/* $(DESTDIR)$(PREFIX)/bin/
+ 	cp -r lib/* $(DESTDIR)$(PREFIX)/lib/srfirewall/
+-	cp -r etc/* $(DESTDIR)$(PREFIX)/etc/srfirewall/
++	cp -r etc/* $(DESTDIR)/etc/srfirewall/
+ 	
+ install-docs:
+ 	mkdir -p $(DESTDIR)$(PREFIX)/share/doc/srfirewall
+-	cp -r ChangeLog doc/* License ReadMe $(DESTDIR)$(PREFIX)/share/doc/srfirewall
+\ No newline at end of file
++	cp -r ChangeLog doc/* License ReadMe $(DESTDIR)$(PREFIX)/share/doc/srfirewall

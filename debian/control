@@ -1,0 +1,14 @@
+Source: srfirewall
+Section: net
+Priority: optional
+Maintainer: Brielle Bruns <bruns@2mbit.com>
+Build-Depends: debhelper (>= 8.0.0), bash (>= 2.0)
+Standards-Version: 3.9.5
+Homepage: http://code.google.com/p/firewall-sosdg
+
+Package: srfirewall
+Architecture: all
+Depends: ${misc:Depends}, iptables, bash (>= 2.0)
+Description: Powerful, but simple to use netfilter/iptables firewall
+ Powerful, but simple to use firewall for Linux that has minimal
+ dependencies other than iptables and bash.
