@@ -30,6 +30,9 @@ function iptables_rules_flush {
 		ipv4|*) VER_IPTABLES=${IPTABLES} ; TABLE_NAMES=/proc/net/ip_tables_names ;;
 	esac
 	${display} GREEN "Flushing ${IP_VERSION} rules..."
+	${VER_IPTABLES} -P INPUT ACCEPT &>/dev/null
+	${VER_IPTABLES} -P OUTPUT ACCEPT &>/dev/null
+	${VER_IPTABLES} -P FORWARD ACCEPT &>/dev/null
 	${VER_IPTABLES} -F &>/dev/null
 	${VER_IPTABLES} -X &>/dev/null
 	${VER_IPTABLES} -F INPUT &>/dev/null
@@ -39,9 +42,6 @@ function iptables_rules_flush {
 	${VER_IPTABLES} -t nat -X &>/dev/null
 	${VER_IPTABLES} -t mangle -F &>/dev/null
 	${VER_IPTABLES} -t mangle -X &>/dev/null
-	${VER_IPTABLES} -P INPUT ACCEPT &>/dev/null
-	${VER_IPTABLES} -P OUTPUT ACCEPT &>/dev/null
-	${VER_IPTABLES} -P FORWARD ACCEPT &>/dev/null
 	#for i in `cat $TABLE_NAMES`; do
 	#	${VER_IPTABLES} -F -t $i &>/dev/null
 	#done
@@ -51,17 +51,19 @@ function iptables_rules_flush {
 # iptables_policy_set (ipv6|ipv4) (ACCEPT|DROP)
 # Sets all policy rules to either ACCEPT or DROP for ipv4 or ipv6
 # If no policy given, assume ACCEPT
-function iptables_policy_reset {
+function default_policy_set {
 	IP_VERSION=$1
-	SET_POLICY=${2=ACCEPT}
+	INPOLICY=${2=ACCEPT}
+	OUTPOLICY=${3=ACCEPT}
+	FWDPOLICY=${4=ACCEPT}
 	case $IP_VERSION in
 		ipv6) VER_IPTABLES=${IP6TABLES} ;;
 		ipv4|*) VER_IPTABLES=${IPTABLES} ;;
 	esac
 	${display_c} RED "Setting ${IP_VERSION} policies to ${SET_POLICY}..."
-	${VER_IPTABLES} --policy INPUT ${SET_POLICY}
-	${VER_IPTABLES} --policy OUTPUT ${SET_POLICY}
-	${VER_IPTABLES} --policy FORWARD ${SET_POLICY}
+	${VER_IPTABLES} --policy INPUT ${INPOLICY}
+	${VER_IPTABLES} --policy OUTPUT ${OUTPOLICY}
+	${VER_IPTABLES} --policy FORWARD ${FWDPOLICY}
 }
 
 # setup_iptables_chains (ipv4|ipv6)
