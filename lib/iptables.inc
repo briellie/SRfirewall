@@ -38,13 +38,13 @@ function iptables_rules_flush {
 	${VER_IPTABLES} -F INPUT &>/dev/null
 	${VER_IPTABLES} -F OUTPUT &>/dev/null
 	${VER_IPTABLES} -F FORWARD &>/dev/null
-	${VER_IPTABLES} -t nat -F &>/dev/null
-	${VER_IPTABLES} -t nat -X &>/dev/null
+	#${VER_IPTABLES} -t nat -F &>/dev/null
+	#${VER_IPTABLES} -t nat -X &>/dev/null
 	${VER_IPTABLES} -t mangle -F &>/dev/null
 	${VER_IPTABLES} -t mangle -X &>/dev/null
-	#for i in `cat $TABLE_NAMES`; do
-	#	${VER_IPTABLES} -F -t $i &>/dev/null
-	#done
+	for i in `cat $TABLE_NAMES`; do
+		${VER_IPTABLES} -F -t $i &>/dev/null
+	done
 	#${VER_IPTABLES} -X
 }
 
