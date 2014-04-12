@@ -7,6 +7,7 @@
 			break existing rules since it adds 4 new options at the end that can
 			be omitted completely.
 	- Fix some variable detection rules to be more reliable.
+	- Fix some rule issues after real life stress testing.
 
 2.00 Alpha 1 - 04/10/2014
 	- Complete code rewrite and restructure to solve some long standing issues with v1
