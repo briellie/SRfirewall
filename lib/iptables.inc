@@ -359,12 +359,11 @@ function enable_forwarding {
 	esac
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/forward.conf" ]; then
-		unset conntrack_state
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/forward.conf successful"
-		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
-		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn; do
-			unset revsrcaddress revdstaddress revdstinterface revsrcinterface revsrcport revdstport
+			unset conntrack_state conntrack_udp_new revsrcaddress revdstaddress revdstinterface revsrcinterface revsrcport revdstport
+			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
+			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 			[[ ${action} = \#* ]] && continue
 			[[ -z ${action} ]] && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
@@ -388,7 +387,7 @@ function enable_forwarding {
 			[[ ${dstaddress} != "-" ]] && dstaddress="-d ${dstaddress}"
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
-			([[ ${syn} == "syn" ]] && [[ ${protocol} == "udp" ]] && [[ -z ${conntrack_state} ]]) && conntrack_udp_new=",NEW"
+			([[ ${syn} == "syn" ]] && [[ ${protocol} == "udp" ]] && [[ -z ${conntrack_state} ]]) && conntrack_udp_new=",NEW" && syn="-"
 			[[ ${syn} == "syn" ]] && syn="--syn"
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
