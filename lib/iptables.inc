@@ -359,11 +359,11 @@ function enable_forwarding {
 		use_conntrack="no"
 		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
-		while read -r action srcinterface srcaddress dstinterface dstaddress syn bidirectional; do
+		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn; do
 			[[ ${action} = \#* ]] && continue
 			[[ ${action} = "" ]] && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
-					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${syn} ${bidirectional}" && continue
+					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			([[ ${bidirectional} == "yes" ]] && [[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
@@ -376,21 +376,29 @@ function enable_forwarding {
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
 			[[ ${syn} == "syn" ]] && syn="--syn"
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
+			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
+			[[ ${srcport} != "-" ]] && srcport="--sport ${srcport}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]]) && revsrcport="--dport ${srcport}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]]) && revdstport="--sport ${dstport}"
+			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${syn} ${bidirectional}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${srcinterface} == "-" ]] && srcinterface=""
 			[[ ${dstinterface} == "-" ]] && dstinterface=""
 			[[ ${dstaddress} == "-" ]] && dstaddress=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			[[ ${dstport} == "-" ]] && dstport=""
+			[[ ${srcport} == "-" ]] && srcport=""
+			[[ ${syn} == "-" ]] && syn=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
 			
 			[[ ${action} == "DROP" ]] && conntrack_state=""
-			[[ ${syn} == "-" ]] && syn=""
+
 			
-			${VER_IPTABLES} -A ${FwdFilter} ${srcinterface} ${srcaddress} ${syn} ${dstinterface} ${dstaddress} ${conntrack_state} -j ${action}
-			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${revsrcinterface} ${revsrcaddress} ${syn} ${revdstinterface} ${revdstaddress} ${conntrack_state} -j ${action}
+			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} -j ${action}
+			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
