@@ -19,10 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function load_kernel_modules {
-	LOAD_MODULES=$2
+	LOAD_MODULES=$1
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Loading kernel module:" N
 	for i in $LOAD_MODULES; do
-		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Loading kernel module ${i}..."
+		${debug} ${DebugColor} "${i} " N
 		${MODPROBE} ${i}
 	done
+	${debug} ${DebugColor} "\n${FUNCNAME}:${DEFAULT_COLOR} done."
 }
