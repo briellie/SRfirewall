@@ -370,10 +370,10 @@ function enable_forwarding {
 			# Although these next few rules seems like they duplicate some work, they
 			# actually make handling later rules simpler even if we end up blanking
 			# them yet again.
-			[[ ${dstport} != "" ]] && dstport="-"
-			[[ ${srcport} != "" ]] && srcport="-"
-			[[ ${protocol} != "" ]] && protocol="-"
-			[[ ${syn} != "" ]] && syn="-"
+			[[ -z ${dstport} ]] && dstport="-"
+			[[ -z ${srcport} ]] && srcport="-"
+			[[ -z ${protocol} ]] && protocol="-"
+			[[ -z ${syn} ]] && syn="-"
 			
 			([[ ${bidirectional} == "yes" ]] && [[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstaddress} != "-" ]]) && revdstaddress="-s ${dstaddress}"
@@ -484,7 +484,7 @@ function enable_services {
 		while read -r service protocol interface address srcaddress; do
 			multiport="no"
 			[[ ${service} = \#* ]] && continue
-			[[ ${service} = "" ]] && continue
+			[[ -z ${service} ]] && continue
 			[[ ${service} == "-" ]] \
 					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${address} ${srcaddress}" && continue
 			[[ ${protocol} == "-" ]] \
@@ -556,19 +556,27 @@ function enable_portfw {
 		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
 		while read -r service protocol intip intport interface address srcaddress; do
 			[[ ${service} = \#* ]] && continue
-			[[ ${service} = "" ]] && continue
+			[[ -z ${service} ]] && continue
 			[[ ${service} == "-" ]] \
 					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${intip} ${intport} ${protocol} ${interface} ${address} ${srcaddress}" && continue
 			[[ ${protocol} == "-" ]] \
 					&& ${display} RED "service.conf: Error - protocol can not be empty: ${DEFAULT_COLOR}${service} ${intip} ${intport} ${protocol} ${interface} ${address} ${srcaddress}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
+
+			# Although these next few rules seems like they duplicate some work, they
+			# actually make handling later rules simpler even if we end up blanking
+			# them yet again.
+			[[ -z ${interface} ]] && interface="-"
+			[[ -z ${address} ]] && address="-"
+			[[ -z ${srcaddress} ]] && srcaddress="-"
+
 			[[ ${service} != "-" ]]  && service="--dport ${service}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			[[ ${intip} != "-" ]] && intdest="--to-destination ${intip}:${intport}"
-			([[ ${interface} != "-" ]] && [[ ${interface} != "" ]]) && interface="-i ${interface}"
-			([[ ${address} != "-" ]] && [[ ${address} != "" ]]) && address="-d ${address}"
-			([[ ${srcaddress} != "-" ]] && [[ ${srcaddress} != "" ]]) && srcaddress="-s ${srcaddress}"
+			[[ ${interface} != "-" ]] && interface="-i ${interface}"
+			[[ ${address} != "-" ]] && address="-d ${address}"
+			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${service} ${protocol} ${intip} ${intport} ${interface} ${address} ${srcaddress}"
 			
