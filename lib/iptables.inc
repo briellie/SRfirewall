@@ -378,8 +378,8 @@ function enable_forwarding {
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
 			[[ ${srcport} != "-" ]] && srcport="--sport ${srcport}"
-			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]] && [[ ${srcport} != ""]]) && revsrcport="--dport ${srcport}"
-			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]] && [[ ${dstport} != ""]]) && revdstport="--sport ${dstport}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]] && [[ ${srcport} != "" ]]) && revsrcport="--dport ${srcport}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]] && [[ ${dstport} != "" ]]) && revdstport="--sport ${dstport}"
 			([[ ${protocol} != "-" ]] && [[ ${protocol} != ""]]) && protocol="-p ${protocol}"
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}"
