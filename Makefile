@@ -15,3 +15,9 @@ install-etc:
 install-docs:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/doc/srfirewall
 	cp -r ChangeLog doc/* License ReadMe $(DESTDIR)$(PREFIX)/share/doc/srfirewall
+	
+upgrade:
+	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/srfirewall \
+	$(DESTDIR)$(PREFIX)/etc/srfirewall
+	cp -r bin/* $(DESTDIR)$(PREFIX)/bin/
+	cp -r lib/* $(DESTDIR)$(PREFIX)/lib/srfirewall/
