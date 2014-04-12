@@ -1,0 +1,35 @@
+--- a/Makefile
++++ b/Makefile
+@@ -1,4 +1,4 @@
+-PREFIX=/usr/local
++PREFIX=/usr
+ 
+ all: # Nothing here
+ 
+@@ -7,11 +7,11 @@
+ 	$(DESTDIR)$(PREFIX)/etc/srfirewall
+ 	cp -r bin/* $(DESTDIR)$(PREFIX)/bin/
+ 	cp -r lib/* $(DESTDIR)$(PREFIX)/lib/srfirewall/
+-	if [ ! -e $(DESTDIR)$(PREFIX)/etc/srfirewall/main.conf ]; then cp -r etc/* $(DESTDIR)$(PREFIX)/etc/srfirewall/; fi
++	if [ ! -e $(DESTDIR)/etc/srfirewall/main.conf ]; then cp -r etc/* $(DESTDIR)/etc/srfirewall/; fi
+ 	
+ install-etc:
+-	cp -r etc/* $(DESTDIR)$(PREFIX)/etc/srfirewall/
++	cp -r etc/* $(DESTDIR)/etc/srfirewall/
+ 	
+ install-docs:
+ 	mkdir -p $(DESTDIR)$(PREFIX)/share/doc/srfirewall
+-	cp -r ChangeLog doc/* License ReadMe $(DESTDIR)$(PREFIX)/share/doc/srfirewall
+\ No newline at end of file
++	cp -r ChangeLog doc/* License ReadMe $(DESTDIR)$(PREFIX)/share/doc/srfirewall
+--- a/bin/srfirewall
++++ b/bin/srfirewall
+@@ -22,7 +22,7 @@
+ FW_VERSION="2.0 Alpha 2"
+ 
+ # Important directory locations
+-FWPREFIX="/usr/local"
++FWPREFIX="/usr"
+ FWCONFIGDIR="${FWPREFIX}/etc/srfirewall"
+ FWLIBDIR="${FWPREFIX}/lib/srfirewall"
+ FWBINDIR="${FWPREFIX}/bin"
