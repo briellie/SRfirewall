@@ -85,8 +85,10 @@ function setup_iptables_chains {
 	${VER_IPTABLES} -N ${InFilter}
 	${VER_IPTABLES} -N ${OutFilter}
 	${VER_IPTABLES} -N ${FwdFilter}
-	${VER_IPTABLES} -N ${NAT} -t nat
-	${VER_IPTABLES} -N ${PortForward} -t nat
+	([[ ${IP_VERSION} == "4" ]] && [[ ${Enablev4NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${NAT} -t nat
+	([[ ${IP_VERSION} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${NAT} -t nat
+	([[ ${IP_VERSION} == "4" ]] && [[ ${Enablev4NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${PortForward} -t nat
+	([[ ${IP_VERSION} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${PortForward} -t nat
 	${VER_IPTABLES} -N ${InPostRules}
 	${VER_IPTABLES} -N ${OutPostRules}
 	
@@ -115,7 +117,8 @@ function setup_iptables_chains {
 	([[ ${IP_VERSION} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up PortForward"
-	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
+	([[ ${IP_VERSION} == "4" ]] && [[ ${Enablev4NAT} == "yes" ]]) && ${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
+	([[ ${IP_VERSION} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
