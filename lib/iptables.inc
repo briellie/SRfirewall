@@ -45,7 +45,7 @@ function iptables_rules_flush {
 	for i in `cat $TABLE_NAMES`; do
 		${VER_IPTABLES} -F -t $i &>/dev/null
 	done
-	#${VER_IPTABLES} -X
+	${VER_IPTABLES} -X &>/dev/null
 }
 
 # iptables_policy_set (ipv6|ipv4) (ACCEPT|DROP)
