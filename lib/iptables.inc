@@ -363,7 +363,7 @@ function enable_forwarding {
 			[[ ${action} = \#* ]] && continue
 			[[ ${action} = "" ]] && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
-					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}" && continue
+					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			
@@ -391,7 +391,7 @@ function enable_forwarding {
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]]) && revdstport="--sport ${dstport}"
 			([[ ${protocol} != "-" ]] && [[ ${protocol} != "" ]]) && protocol="-p ${protocol}"
 			
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${srcinterface} == "-" ]] && srcinterface=""
