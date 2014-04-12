@@ -209,6 +209,7 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	
 	[[ ${AllowAllv6Loopback} == "yes" ]] && allow_all_loopback ipv6
 	[[ ${EnableTrustedv6Hosts} == "yes" ]] && allow_trusted_hosts ipv6
+	enable_v6_critical_icmp
 	Defaultv6InPolicy=${Defaultv6InPolicy=ACCEPT}
 	Defaultv6OutPolicy=${Defaultv6OutPolicy=ACCEPT}
 	Defaultv6FwdPolicy=${Defaultv6FwdPolicy=ACCEPT}

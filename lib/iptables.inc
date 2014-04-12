@@ -89,6 +89,7 @@ function setup_iptables_chains {
 	([[ ${IPVER} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${NAT} -t nat
 	([[ ${IPVER} == "4" ]] && [[ ${Enablev4NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${PortForward} -t nat
 	([[ ${IPVER} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -N ${PortForward} -t nat
+	[[ ${IPVER} == "6" ]] && ${VER_IPTABLES} -N ${v6ICMP}
 	${VER_IPTABLES} -N ${InPostRules}
 	${VER_IPTABLES} -N ${OutPostRules}
 	
@@ -120,6 +121,7 @@ function setup_iptables_chains {
 	([[ ${IPVER} == "4" ]] && [[ ${Enablev4NAT} == "yes" ]]) && ${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	([[ ${IPVER} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/postrun.sh; fi
+	[[ ${IPVER} == "6" ]] && ${VER_IPTABLES} -A INPUT -j ${v6ICMP}
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up InPostRules"
 	${VER_IPTABLES} -A INPUT -j ${InPostRules}
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up OutPostRules"
@@ -611,4 +613,29 @@ function enable_portfw {
 		done < "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
+}
+
+function enable_v6_critical_icmp {
+	VER_IPTABLES=${IP6TABLES}
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 1 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 2 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 3 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 4 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 133 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 134-j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 135-j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 136 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 137 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 141 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 142 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 130 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 131 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 132 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 143 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 148 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 149 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 151 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 152 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -s fe80::/10 -p ipv6-icmp --icmpv6-type 153 -j ACCEPT
 }
