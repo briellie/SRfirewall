@@ -1,13 +1,13 @@
-SRFirewall v2.0 http://www.sosdg.org/freestuff/firewall Written by:
-Brielle Bruns <bruns@2mbit.com>
+SRFirewall v2.0 http://www.sosdg.org/freestuff/firewall
+Written by: Brielle Bruns <bruns@2mbit.com>
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 Installing is fairly straight forward:
 
-1. Download to a location of your choosing, I recommend /usr/src 2. Run
-'make install' to put files in /usr/local by default 3. Edit config
-files in /usr/local/etc/srfirewall 4. Run 'srfirewall' command to load
-the firewall and work its magic
+1. Download to a location of your choosing, I recommend /usr/src
+2. Run 'make install' to put files in /usr/local by default
+3. Edit config files in /usr/local/etc/srfirewall
+4. Run 'srfirewall' command to load the firewall and work its magic
 
 If you are upgrading from a previous version and don't want to overwrite
 your config files, use 'make upgrade'.
@@ -24,8 +24,8 @@ cd /usr/src
 svn checkout http://firewall-sosdg.googlecode.com/svn/srfirewall srfirewall-trunk
 ln -s /usr/src/srfirewall-trunk/lib /usr/local/lib/srfirewall
 ln -s /usr/src/srfirewall-trunk/bin/srfirewall /usr/local/bin/srfirewall
-cp -R /usr/src/srfirewall-trunk/etc /usr/local/etc/srfirewall === End commands
-===
+cp -R /usr/src/srfirewall-trunk/etc /usr/local/etc/srfirewall
+=== End commands ===
 
 Then when you want to update to bleeding edge, all you have to run is
 'svn update'.
