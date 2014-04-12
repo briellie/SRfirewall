@@ -42,9 +42,12 @@ source "${FWCONFIGDIR}/ipv6.conf"
 # The local.conf file can be used to override any of the above files without having to worry
 # about changes being overwritten when upgrading.  Mostly useful for people who use a package
 # manager.
-[[ -e "{FWCONFIGDIR}/local.conf" ]] && source "{FWCONFIGDIR}/local.conf"
-[[ -e "{FWCONFIGDIR}/ipv4/local.conf" ]] && source "{FWCONFIGDIR}/ipv4/local.conf"
-[[ -e "{FWCONFIGDIR}/ipv6/local.conf" ]] && source "{FWCONFIGDIR}/ipv6/local.conf"
+[[ -e "${FWCONFIGDIR}/local.conf" ]] && source "{FWCONFIGDIR}/local.conf" \
+	&& ${display} GREEN "Found ${FWCONFIGDIR}/local.conf. Loading overrides."
+[[ -e "${FWCONFIGDIR}/ipv4/local.conf" ]] && source "{FWCONFIGDIR}/ipv4/local.conf" \
+	&& ${display} GREEN "Found ${FWCONFIGDIR}/ipv4/local.conf. Loading overrides."
+[[ -e "${FWCONFIGDIR}/ipv6/local.conf" ]] && source "{FWCONFIGDIR}/ipv6/local.conf" \
+	&& ${display} GREEN "Found ${FWCONFIGDIR}/ipv6/local.conf. Loading overrides."
 
 
 # We require at least bash v2 or later at this point given some of the more complex
