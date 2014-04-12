@@ -435,6 +435,9 @@ function enable_nat {
 					&& ${display} RED "nat.conf: Error - must begin with SNAT/MASQ/NETMAP: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
+			[[ ${srcaddress} != "-" ]] && revsrcaddress="-d ${srcaddress}"
+			[[ ${dstinterface} != "-" ]] && revdstinterface="-i ${dstinterface}"
+			[[ ${srcinterface} != "-" ]] && revsrcinterface="-o ${srcinterface}"
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
 			([[ ${srcaddress} != "-" ]] && [[ ${type} != "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
@@ -451,9 +454,7 @@ function enable_nat {
 
 			([[ ${srcaddress} != "-" ]] && [[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && action="-j NETMAP" && srcaddress="-d ${srcaddress}" && dstaddress="--to ${dstaddress}"
 			
-			[[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
-			[[ ${dstinterface} != "-" ]]) && revdstinterface="-i ${dstinterface}"
-			[[ ${srcinterface} != "-" ]]) && revsrcinterface="-o ${srcinterface}"
+
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
 			
 			# Blank variables that we're not going to use.
