@@ -111,7 +111,8 @@ function setup_iptables_chains {
 	${VER_IPTABLES} -A FORWARD -j ${FwdFilter}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/nat.sh; fi
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up NAT"
-	${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
+	([[ ${IP_VERSION} == "4" ]] && [[ ${Enablev4NAT} == "yes" ]]) && ${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
+	([[ ${IP_VERSION} == "6" ]] && [[ ${Enablev6NAT} == "yes" ]]) && ${VER_IPTABLES} -A POSTROUTING -t nat -j ${NAT}
 	if [ -x ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh ]; then . ${FWCONFIGDIR}/ipv${IPVER}/custom/portfw.sh; fi
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Setting up PortForward"
 	${VER_IPTABLES} -A PREROUTING -t nat -j ${PortForward}
