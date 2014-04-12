@@ -360,14 +360,12 @@ function enable_forwarding {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/forward.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/forward.conf successful"
-		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn; do
+		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn state; do
 			unset conntrack_state conntrack_udp_new revsrcaddress revdstaddress revdstinterface revsrcinterface revsrcport revdstport
-			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
-			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 			[[ ${action} = \#* ]] && continue
 			[[ -z ${action} ]] && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
-					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn}" && continue
+					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn} ${state}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			
@@ -378,6 +376,12 @@ function enable_forwarding {
 			[[ -z ${srcport} ]] && srcport="-"
 			[[ -z ${protocol} ]] && protocol="-"
 			[[ -z ${syn} ]] && syn="-"
+			[[ -z ${state} ]] && state="-"
+			
+			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]] && [[ ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
+			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]] && [[ ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
+			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]] && [[ ! ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ${state}"
+			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]] && [[ ! ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ${state}"
 			
 			([[ ${bidirectional} == "yes" ]] && [[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstaddress} != "-" ]]) && revdstaddress="-s ${dstaddress}"
@@ -397,7 +401,7 @@ function enable_forwarding {
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]]) && revdstport="--sport ${dstport}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn} ${state}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${srcinterface} == "-" ]] && srcinterface=""
@@ -407,14 +411,15 @@ function enable_forwarding {
 			[[ ${dstport} == "-" ]] && dstport=""
 			[[ ${srcport} == "-" ]] && srcport=""
 			[[ ${syn} == "-" ]] && syn=""
+			[[ ${state} == "-" ]] && state=""
 			[[ ${protocol} == "-" ]] && protocol=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
 			
 			[[ ${action} == "DROP" ]] && conntrack_state=""
 
 			
-			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state}${conntrack_udp_new} -j ${action}
-			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state}${conntrack_udp_new} -j ${action}
+			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} -j ${action}
+			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi

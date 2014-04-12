@@ -1,5 +1,8 @@
 2.00 Alpha 3 -
-	- (Hopefully) Resolved UDP reply issue with conntracking and default DROP
+	- Give people knobs to tinker with regarding state matching.  Kills
+		multiple birds with one stone.
+		- forward.conf
+
 
 
 2.00 Alpha 2 - 04/12/2014
