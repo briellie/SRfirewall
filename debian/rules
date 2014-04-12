@@ -7,5 +7,6 @@
 %:
 	dh $@ 
 
-#override_dh_auto_install:
-#        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install
+override_dh_auto_install:
+        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install
+        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install-etc

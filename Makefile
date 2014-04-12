@@ -7,6 +7,8 @@ install:
 	$(DESTDIR)$(PREFIX)/etc/srfirewall
 	cp -r bin/* $(DESTDIR)$(PREFIX)/bin/
 	cp -r lib/* $(DESTDIR)$(PREFIX)/lib/srfirewall/
+	
+install-etc:
 	cp -r etc/* $(DESTDIR)$(PREFIX)/etc/srfirewall/
 	
 install-docs:
