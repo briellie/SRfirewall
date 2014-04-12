@@ -60,7 +60,7 @@ function default_policy_set {
 		ipv6) VER_IPTABLES=${IP6TABLES} ;;
 		ipv4|*) VER_IPTABLES=${IPTABLES} ;;
 	esac
-	${display_c} RED "Setting ${IP_VERSION} policies to ${SET_POLICY}..."
+	${display} RED "Setting ${IP_VERSION} policies to ${SET_POLICY}..."
 	${VER_IPTABLES} --policy INPUT ${INPOLICY}
 	${VER_IPTABLES} --policy OUTPUT ${OUTPOLICY}
 	${VER_IPTABLES} --policy FORWARD ${FWDPOLICY}
