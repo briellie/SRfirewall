@@ -361,7 +361,7 @@ function enable_forwarding {
 		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn; do
 			[[ ${action} = \#* ]] && continue
-			[[ ${action} = "" ]] && continue
+			[[ -z ${action} ]] && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]]) \
 					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn}" && continue
 
@@ -389,7 +389,7 @@ function enable_forwarding {
 			[[ ${srcport} != "-" ]] && srcport="--sport ${srcport}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]]) && revsrcport="--dport ${srcport}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]]) && revdstport="--sport ${dstport}"
-			([[ ${protocol} != "-" ]] && [[ ${protocol} != "" ]]) && protocol="-p ${protocol}"
+			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${srcport} ${dstport} ${protocol} ${syn}"
 			
@@ -401,6 +401,7 @@ function enable_forwarding {
 			[[ ${dstport} == "-" ]] && dstport=""
 			[[ ${srcport} == "-" ]] && srcport=""
 			[[ ${syn} == "-" ]] && syn=""
+			[[ ${protocol} == "-" ]] && protocol=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
 			
 			[[ ${action} == "DROP" ]] && conntrack_state=""
