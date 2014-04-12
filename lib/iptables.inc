@@ -387,7 +387,7 @@ function enable_forwarding {
 			[[ ${dstaddress} != "-" ]] && dstaddress="-d ${dstaddress}"
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
-			([[ ${syn} == "syn" ]] && [[ ${protocol} == "udp" ]] && [[ -z ${conntrack_state} ]]) && conntrack_udp_new=",NEW" && syn="-"
+			([[ ${syn} == "syn" ]] && [[ ${protocol} == "udp" ]] && [[ ! -z ${conntrack_state} ]]) && conntrack_udp_new=",NEW" && syn="-"
 			[[ ${syn} == "syn" ]] && syn="--syn"
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
