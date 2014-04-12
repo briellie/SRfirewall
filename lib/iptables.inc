@@ -451,7 +451,9 @@ function enable_nat {
 
 			([[ ${srcaddress} != "-" ]] && [[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && action="-j NETMAP" && srcaddress="-d ${srcaddress}" && dstaddress="--to ${dstaddress}"
 			
-			
+			[[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
+			[[ ${dstinterface} != "-" ]]) && revdstinterface="-i ${dstinterface}"
+			[[ ${srcinterface} != "-" ]]) && revsrcinterface="-o ${srcinterface}"
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
 			
 			# Blank variables that we're not going to use.
@@ -462,6 +464,7 @@ function enable_nat {
 			
 			${VER_IPTABLES} -A ${NAT} -t nat ${srcaddress} ${action} ${dstinterface} ${dstaddress}
 			${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
+			${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${revsrcinterface} ${revsrcaddress} ${revdstinterface} -j ACCEPT
 			done < "${FWCONFIGDIR}/ipv${IPVER}/nat.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
