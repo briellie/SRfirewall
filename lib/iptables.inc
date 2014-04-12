@@ -366,6 +366,15 @@ function enable_forwarding {
 					&& ${display} RED "forward.conf: Error - action must be either ACCEPT or DROP : ${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
+			
+			# Although these next few rules seems like they duplicate some work, they
+			# actually make handling later rules simpler even if we end up blanking
+			# them yet again.
+			[[ ${dstport} != "" ]] && dstport="-"
+			[[ ${srcport} != "" ]] && srcport="-"
+			[[ ${protocol} != "" ]] && protocol="-"
+			[[ ${syn} != "" ]] && syn="-"
+			
 			([[ ${bidirectional} == "yes" ]] && [[ ${srcaddress} != "-" ]]) && revsrcaddress="-d ${srcaddress}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstaddress} != "-" ]]) && revdstaddress="-s ${dstaddress}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstinterface} != "-" ]]) && revdstinterface="-i ${dstinterface}"
@@ -378,8 +387,8 @@ function enable_forwarding {
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
 			[[ ${srcport} != "-" ]] && srcport="--sport ${srcport}"
-			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]] && [[ ${srcport} != "" ]]) && revsrcport="--dport ${srcport}"
-			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]] && [[ ${dstport} != "" ]]) && revdstport="--sport ${dstport}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]]) && revsrcport="--dport ${srcport}"
+			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]]) && revdstport="--sport ${dstport}"
 			([[ ${protocol} != "-" ]] && [[ ${protocol} != "" ]]) && protocol="-p ${protocol}"
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${action} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${bidirectional} ${src-port} ${dst-port} ${protocol} ${syn}"
@@ -389,8 +398,8 @@ function enable_forwarding {
 			[[ ${dstinterface} == "-" ]] && dstinterface=""
 			[[ ${dstaddress} == "-" ]] && dstaddress=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
-			([[ ${dstport} == "-" ]] && [[ ${dstport} != "" ]]) && dstport=""
-			([[ ${srcport} == "-" ]] && [[ ${srcport} != "" ]]) && srcport=""
+			[[ ${dstport} == "-" ]] && dstport=""
+			[[ ${srcport} == "-" ]] && srcport=""
 			[[ ${syn} == "-" ]] && syn=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
 			
