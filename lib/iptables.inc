@@ -306,13 +306,13 @@ function enable_filtering {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/acl.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/acl.conf successful"
-		while read -r direction action interface srcaddress srcport dstaddress dstport protocol; do
+		while read -r direction action interface srcaddress srcport dstaddress dstport protocol syn; do
 			[[ ${direction} = \#* ]] && continue
 			[[ ${direction} = "" ]] && continue
 			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
-					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
+					&& ${display} RED "acl.conf: Error - must begin with IN/OUT: ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${syn}" && continue
 			([[ ${action} != "ACCEPT" ]] && [[ ${action} != "DROP" ]] && [[ ${action} != "REJECT" ]]) \
-					&& ${display} RED "acl.conf: Error - action must be either ACCEPT, DROP, or REJECT : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}" && continue
+					&& ${display} RED "acl.conf: Error - action must be either ACCEPT, DROP, or REJECT : ${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${syn}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
@@ -325,6 +325,8 @@ function enable_filtering {
 			[[ ${direction} == "IN" ]] && chain="${InFilter}"
 			[[ ${protocol} != "-" ]] && protocol="-p ${protocol}"
 			[[ ${action} == "REJECT" ]] && action="REJECT --reject-with tcp-reset"
+			[[ ${syn} == "syn" ]] && syn="--syn"
+			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
 			
@@ -335,8 +337,9 @@ function enable_filtering {
 			[[ ${dstaddress} == "-" ]] && dstaddress=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			[[ ${protocol} == "-" ]] && protocol=""
+			[[ ${syn} == "-" ]] && syn=""
 			
-			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${dstaddress} ${dstport} -j ${action}
+			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${syn} ${dstaddress} ${dstport} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/acl.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi

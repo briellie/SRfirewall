@@ -1,6 +1,7 @@
 2.00 Alpha 2 - 04/11/2014
 	- Slightly better documentation
 	- Kernel module loading - 4/11/2014
+	- Add syn matching to acl.conf rules
 
 2.00 Alpha 1 - 04/10/2014
 	- Complete code rewrite and restructure to solve some long standing issues with v1
