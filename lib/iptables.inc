@@ -359,8 +359,8 @@ function enable_forwarding {
 	esac
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/forward.conf" ]; then
+		unset conntrack_state
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/forward.conf successful"
-		use_conntrack="no"
 		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn; do
@@ -388,6 +388,7 @@ function enable_forwarding {
 			[[ ${dstaddress} != "-" ]] && dstaddress="-d ${dstaddress}"
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
+			([[ ${syn} == "syn" ]] && [[ ${protocol} == "udp" ]] && [[ -z ${conntrack_state} ]]) && conntrack_udp_new=",NEW"
 			[[ ${syn} == "syn" ]] && syn="--syn"
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
@@ -412,8 +413,8 @@ function enable_forwarding {
 			[[ ${action} == "DROP" ]] && conntrack_state=""
 
 			
-			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} -j ${action}
-			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} -j ${action}
+			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state}${conntrack_udp_new} -j ${action}
+			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state}${conntrack_udp_new} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
