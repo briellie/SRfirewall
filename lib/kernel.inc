@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function load_kernel_modules {
-	LOAD_MODULES="${2}"
+	LOAD_MODULES=$2
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	for i in $LOAD_MODULES; do
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Loading kernel module ${i}..."
