@@ -5,8 +5,8 @@
 #export DH_VERBOSE=1
 
 %:
-	dh $@ 
+	dh $@ --with quilt
 
-override_dh_auto_install:
-        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install
-        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install-etc
+#override_dh_auto_install:
+#        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install
+#        $(MAKE) DESTDIR=$$(pwd)/debian/srfirewall PREFIX=/usr install-etc
