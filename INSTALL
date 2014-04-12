@@ -1,0 +1,45 @@
+SRFirewall v2.0 http://www.sosdg.org/freestuff/firewall Written by:
+Brielle Bruns <bruns@2mbit.com>
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Installing is fairly straight forward:
+
+1. Download to a location of your choosing, I recommend /usr/src
+2. Run 'make install' to put files in /usr/local by default
+3. Edit config files in /usr/local/etc/srfirewall
+4. Run 'srfirewall' command to load the firewall and work its magic
+
+If you are upgrading from a previous version and don't want to overwrite
+your config files, use 'make upgrade'.
+
+If you wish to install to some place other then /usr/local, you will need
+to edit the Makefile PREFIX as well as the bin/srfirewall script to reflect
+the new location.
+
+If you want to run from SVN trunk (for the brave), here's how I would do it:
+
+=== Begin commands ===
+cd /usr/src
+svn checkout http://firewall-sosdg.googlecode.com/svn/srfirewall srfirewall-trunk
+ln -s /usr/src/srfirewall-trunk/lib /usr/local/lib/srfirewall
+ln -s /usr/src/srfirewall-trunk/bin/srfirewall /usr/local/bin/srfirewall
+cp -R /usr/src/srfirewall-trunk/etc /usr/local/etc/srfirewall
+=== End commands ===
+
+Then when you want to update to bleeding edge, all you have to run is 'svn update'.
+
+You _will_ need to look for newly changed/added files and update appropriately.
+
+To make the update process easier, I made the config script look for a local.conf file in
+etc/srfirewall that can be used to override the default options.  This will allow
+you to replace all of the *.conf files on upgrade without losing local option changes.
+
+The default options are designed to be 'sane' for a good portion of the many users,
+so the use of local.conf only needs specific options you wish to override.
+
+Files in etc/srfirewall/ipv{4,6} can be safely left alone during upgrade since
+I plan to not make upstream changes to them once they are written and defined
+for use.
+
+When in doubt, check the CHANGELOG file for mention of new config options and/or
+config files.
