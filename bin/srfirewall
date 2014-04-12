@@ -31,6 +31,7 @@ FWBINDIR="${FWPREFIX}/bin"
 source "${FWLIBDIR}/binaries.inc"
 source "${FWLIBDIR}/iptables.inc"
 source "${FWLIBDIR}/display.inc"
+source "${FWLIBDIR}/kernel.inc"
 
 source "${FWCONFIGDIR}/main.conf"
 
@@ -46,10 +47,10 @@ source "${FWCONFIGDIR}/ipv6.conf"
 [[ -e "{FWCONFIGDIR}/ipv6/local.conf" ]] && source "{FWCONFIGDIR}/ipv6/local.conf"
 
 
-# We require at least bash v3 or later at this point given some of the more complex
+# We require at least bash v2 or later at this point given some of the more complex
 # operations we do to make the firewall script work.
 if (( ${BASH_VERSINFO[0]} <= "2" )); then
-	echo "Error: We can only run with bash 3.0 or higher.  Please upgrade your version"
+	echo "Error: We can only run with bash 2.0 or higher.  Please upgrade your version"
 	echo "of bash to something more recent, preferably the latest which is, as of this"
 	echo "writing, 4.x"
 	exit 1
@@ -178,7 +179,11 @@ if [ "${EnableIPv4}" == "yes" ]; then
 	Defaultv4InPolicy=${Defaultv4InPolicy=ACCEPT}
 	Defaultv4OutPolicy=${Defaultv4OutPolicy=ACCEPT}
 	Defaultv4FwdPolicy=${Defaultv4FwdPolicy=ACCEPT}
-	default_policy_set ipv4 ${Defaultv4InPolicy} ${Defaultv4OutPolicy} ${Defaultv4FwdPolicy} 
+	default_policy_set ipv4 ${Defaultv4InPolicy} ${Defaultv4OutPolicy} ${Defaultv4FwdPolicy}
+	([[ ${Enablev4NetfilterModules} == "yes" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) \
+		&& load_kernel_modules "${Loadv4NetfilterModules}"
+	([[ ${Enablev4NetfilterModules} == "yes" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]] \
+		&& [[ ${Enablev4NAT} == "yes" ]]) && load_kernel_modules "${Loadv4NetfilterModulesNAT}"
 	[[ ${Enablev4MSSClamp} == "yes" ]] && enable_mss_clamp ipv4
 	([[ ${Enablev4ConnTrackInterfaces} != "none" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) \
 			&& enable_conntrack_int ipv4 "${Enablev4ConnTrackInterfaces}"
@@ -208,6 +213,10 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	Defaultv6OutPolicy=${Defaultv6OutPolicy=ACCEPT}
 	Defaultv6FwdPolicy=${Defaultv6FwdPolicy=ACCEPT}
 	default_policy_set ipv6 ${Defaultv6InPolicy} ${Defaultv6OutPolicy} ${Defaultv6FwdPolicy}
+	([[ ${Enablev6NetfilterModules} == "yes" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
+		&& load_kernel_modules "${Loadv6NetfilterModules}"
+	([[ ${Enablev6NetfilterModules} == "yes" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]] \
+		&& [[ ${Enablev6NAT} == "yes" ]]) && load_kernel_modules "${Loadv6NetfilterModulesNAT}"
 	[[ ${Enablev6MSSClamp} == "yes" ]] && enable_mss_clamp ipv6
 	([[ ${Enablev6ConnTrackInterfaces} != "none" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) \
 			&& enable_conntrack_int ipv6 "${Enablev6ConnTrackInterfaces}"
