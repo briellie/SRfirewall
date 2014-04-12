@@ -19,11 +19,12 @@ reflect the new location.
 If you want to run from SVN trunk (for the brave), here's how I would do
 it:
 
-=== Begin commands === cd /usr/src svn checkout
-http://firewall-sosdg.googlecode.com/svn/srfirewall srfirewall-trunk ln
--s /usr/src/srfirewall-trunk/lib /usr/local/lib/srfirewall ln -s
-/usr/src/srfirewall-trunk/bin/srfirewall /usr/local/bin/srfirewall cp -R
-/usr/src/srfirewall-trunk/etc /usr/local/etc/srfirewall === End commands
+=== Begin commands ===
+cd /usr/src
+svn checkout http://firewall-sosdg.googlecode.com/svn/srfirewall srfirewall-trunk
+ln -s /usr/src/srfirewall-trunk/lib /usr/local/lib/srfirewall
+ln -s /usr/src/srfirewall-trunk/bin/srfirewall /usr/local/bin/srfirewall
+cp -R /usr/src/srfirewall-trunk/etc /usr/local/etc/srfirewall === End commands
 ===
 
 Then when you want to update to bleeding edge, all you have to run is
