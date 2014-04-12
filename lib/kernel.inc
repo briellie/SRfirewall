@@ -23,7 +23,7 @@ function load_kernel_modules {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Loading kernel module:" N
 	for i in $LOAD_MODULES; do
-		${debug} ${DebugColor} "${i} " N
+		${debug} ${DebugColor} " ${DEFAULT_COLOR}${i}" N
 		${MODPROBE} ${i}
 	done
 	${debug} ${DebugColor} "\n${FUNCNAME}:${DEFAULT_COLOR} done."
