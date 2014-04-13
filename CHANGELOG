@@ -2,8 +2,11 @@
 	- Give people knobs to tinker with regarding state matching.  Kills
 		multiple birds with one stone.
 		- forward.conf
-
-
+		- acl.conf
+	- IPv6 is actually working in this version when you have default policy set to DROP
+		IPv6 is particularly difficult regarding ICMPv6 - had to put in quite a few
+		allows by default to make it happy.  Going to have to go through the list
+		and prune it once the code stabilizes.
 
 2.00 Alpha 2 - 04/12/2014
 	- Slightly better documentation
@@ -28,7 +31,8 @@
 		- Easy Block functionality (IPv4/IPv6) - 3/31/2014
 		- ACL/Filtering functionality (IPv4/IPv6) - 4/5/2014
 		- NAT/NETMAP functionality (IPv4/IPv6) - 4/5/2014
-				- IPv6 NAT/NETMAP is untested, have no internal use for it, let me know if works/doesnt
+				- IPv6 NAT/NETMAP is untested, have no internal use for it,
+				let me know if works/doesnt
 		- Forwarding functionality (IPv4/IPv6) - 4/5/2014
 				- Adapted to use conntracking if available - 4/6/2014
 		- Deps on Enablev(4|6)ConnectionTracking for NAT functionality - 4/5/2014

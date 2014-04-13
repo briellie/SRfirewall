@@ -623,8 +623,8 @@ function enable_v6_critical_icmp {
 	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 3 -j ACCEPT
 	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 4 -j ACCEPT
 	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 133 -j ACCEPT
-	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 134-j ACCEPT
-	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 135-j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 134 -j ACCEPT
+	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 135 -j ACCEPT
 	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 136 -j ACCEPT
 	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 137 -j ACCEPT
 	${VER_IPTABLES} -A ${v6ICMP} -p ipv6-icmp --icmpv6-type 141 -j ACCEPT
