@@ -93,6 +93,13 @@ while getopts "hfgv" opt; do
 	  show_version
 	  exit 0
 	  ;;
+	f)
+	  [[ ${EnableIPv4} == "yes" ]] && iptables_rules_flush ipv4
+	  [[ ${EnableIPv6} == "yes" ]] && iptables_rules_flush ipv6
+	  [[ ${EnableIPv6} == "yes" ]] && default_policy_set ipv6 ACCEPT ACCEPT ACCEPT
+	  [[ ${EnableIPv4} == "yes" ]] && default_policy_set ipv4 ACCEPT ACCEPT ACCEPT
+	  exit 0
+	  ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ;;
