@@ -594,7 +594,7 @@ function enable_portfw {
 			[[ ${intip} != "-" ]] && intdest="--to-destination ${intip}:${intport}"
 			[[ ${interface} != "-" ]] && interface="-i ${interface}"
 			[[ ${intip} != "-" ]] && intip="-d ${intip}"
-			[[ ${intport} != "-" ]] && intip="--dport ${intport}"
+			[[ ${intport} != "-" ]] && intport="--dport ${intport}"
 			[[ ${address} != "-" ]] && address="-d ${address}"
 			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
 			
