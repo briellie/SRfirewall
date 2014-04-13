@@ -594,6 +594,7 @@ function enable_portfw {
 			[[ ${intip} != "-" ]] && intdest="--to-destination ${intip}:${intport}"
 			[[ ${interface} != "-" ]] && interface="-i ${interface}"
 			[[ ${intip} != "-" ]] && intip="-d ${intip}"
+			[[ ${intport} != "-" ]] && intip="--dport ${intport}"
 			[[ ${address} != "-" ]] && address="-d ${address}"
 			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
 			
@@ -605,7 +606,7 @@ function enable_portfw {
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			
 			${VER_IPTABLES} -A ${PortForward} -t nat ${protocol} ${service} ${interface} ${address} ${srcaddress} -j DNAT ${intdest}
-			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${service} ${interface} ${intip} ${srcaddress} ${conntrack_state} -j ACCEPT
+			${VER_IPTABLES} -A ${FwdFilter} ${interface} ${intip} ${protocol} ${intport} ${srcaddress} ${conntrack_state} -j ACCEPT
 			
 		done < "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
