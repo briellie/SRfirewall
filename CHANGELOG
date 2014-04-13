@@ -15,7 +15,8 @@
 		willing to redo the config.
 	- Added config examples here: http://www.sosdg.org/software/srfirewall/examples
 	- Implemented -f flag for flushing rules and setting iptables back to default
-	
+	- Fix port forwarding rules so works correctly with FORWARD set to DROP as default
+
 2.00 Alpha 2 - 04/12/2014
 	- Slightly better documentation
 	- Kernel module loading - 4/11/2014
