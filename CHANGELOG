@@ -7,7 +7,13 @@
 		IPv6 is particularly difficult regarding ICMPv6 - had to put in quite a few
 		allows by default to make it happy.  Going to have to go through the list
 		and prune it once the code stabilizes.
-
+	- rule-save/rule-save6 scripts as beginning of work to be able to cache scripts
+		may switch to normal iptables-save/iptables-restore if it works better
+		once I've had time to work on it.
+	- script finally has most features of firewall/sosdg v1.1, meaning it can
+		successfully replace firewall/sosdg in most setups, provided you are
+		willing to redo the config.
+	- Added config examples here: http://www.sosdg.org/software/srfirewall/examples
 2.00 Alpha 2 - 04/12/2014
 	- Slightly better documentation
 	- Kernel module loading - 4/11/2014

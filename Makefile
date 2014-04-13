@@ -5,7 +5,7 @@ all: # Nothing here
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/srfirewall \
 	$(DESTDIR)$(PREFIX)/etc/srfirewall
-	cp -r bin/* $(DESTDIR)$(PREFIX)/bin/
+	cp -r bin/srfirewall $(DESTDIR)$(PREFIX)/bin/
 	cp -r lib/* $(DESTDIR)$(PREFIX)/lib/srfirewall/
 	if [ ! -e $(DESTDIR)$(PREFIX)/etc/srfirewall/main.conf ]; then cp -r etc/* $(DESTDIR)$(PREFIX)/etc/srfirewall/; fi
 	
