@@ -4,6 +4,8 @@ Brielle Bruns <bruns@2mbit.com>
 SRFirewall is a complete rewrite of Firewall/SOSDG v1.1, from scratch,
 with a completely new and reorganized config and file layout.
 
+Configuration Examples:
+http://www.sosdg.org/software/srfirewall/examples
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 I've spent years manually configuring and building scripts for new
