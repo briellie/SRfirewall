@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Important directory locations
+FWPREFIX="/usr/local"
+FWCONFIGDIR="${FWPREFIX}/etc/srfirewall"
+FWLIBDIR="${FWPREFIX}/lib/srfirewall"
+FWBINDIR="${FWPREFIX}/bin"
+source "${FWCONFIGDIR}/main.conf"
+source "${FWCONFIGDIR}/local.conf"
+
+echo "$*" >> "${FWPREFIX}/etc/srfirewall/cache/srfirewall-rules6"
