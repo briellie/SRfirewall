@@ -420,10 +420,7 @@ function enable_forwarding {
 			[[ ${state} == "-" ]] && state=""
 			[[ ${protocol} == "-" ]] && protocol=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
-			
-			[[ ${action} == "DROP" ]] && conntrack_state=""
 
-			
 			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} -j ${action}
 			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
