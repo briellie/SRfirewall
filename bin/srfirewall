@@ -236,5 +236,6 @@ if [ "${EnableIPv6}" == "yes" ]; then
 	[[ ${Enablev6Forwarding} == "yes" ]] && enable_forwarding ipv6
 	[[ ${Enablev6NAT} == "yes" ]] && enable_nat ipv6
 	[[ ${Enablev6PortForwarding} == "yes" ]] && enable_portfw ipv6
+	[[ ${EnableSysctlTweaks} == "yes" ]] && sysctl_tweaks
 fi
 

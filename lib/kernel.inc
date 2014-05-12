@@ -28,3 +28,11 @@ function load_kernel_modules {
 	done
 	${debug} ${DebugColor} "\n${FUNCNAME}:${DEFAULT_COLOR} done."
 }
+
+function sysctl_tweaks {
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
+	if [ -e "${FWCONFIGDIR}/tweaks.conf" ]; then
+		${SYSCTL} -p "${FWCONFIGDIR}/tweaks.conf"
+	fi
+	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
+}
