@@ -1,3 +1,6 @@
+2.01 Alpha 1 - 05/29/2014
+	- Fix executable bits on .sh files in custom
+
 2.00 Release
 	- Add common options for sysctl/proc tweaking of network settings
 	- Yay stable release!
