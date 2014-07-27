@@ -172,7 +172,7 @@ function enable_mss_clamp {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf successful"
-		while read -r interface mss type size; do
+		while read -r interface mss type msssize; do
 			[[ ${interface} = \#* ]] && continue
 			[[ ${interface} = "" ]] && continue
 			[[ -z ${mss} ]] && mss="-"
@@ -181,12 +181,13 @@ function enable_mss_clamp {
 			[[ ${type} == "-" ]] && type="${OutFilter}"
 			[[ ${type} == "out" ]] && type="${OutFilter}"
 			[[ ${type} == "fwd" ]] && type="${FwdFilter}"
-			[[ -z ${size} ]] && size="-"
-			[[ ${size} == "-" ]] && size="--clamp-mss-to-pmtu"
-			[[ ${size} != "-" ]] && size="--set-mss ${size}"
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type} ${size}"
+			[[ -z ${msssize} ]] && msssize="-"
+			[[ ${msssize} == "-" ]] && msssize="--clamp-mss-to-pmtu"
+			[[ ${msssize} != "-" ]] && msssize="--set-mss ${msssize}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type} ${msssize}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-				${size} -o ${interface} -m tcpmss --mss ${mss}
+				 -o ${interface} -m tcpmss --mss ${mss} ${msssize}
+			unset mss msssize interface type
 		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
