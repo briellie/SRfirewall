@@ -182,12 +182,12 @@ function enable_mss_clamp {
 			[[ ${type} == "out" ]] && type="${OutFilter}"
 			[[ ${type} == "fwd" ]] && type="${FwdFilter}"
 			[[ -z ${msssize} ]] && msssize="-"
-			[[ ${msssize} == "-" ]] && msssize="--clamp-mss-to-pmtu"
 			[[ ${msssize} != "-" ]] && msssize="--set-mss ${msssize}"
+			[[ ${msssize} == "-" ]] && msssize="--clamp-mss-to-pmtu"
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type} ${msssize}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 				 -o ${interface} -m tcpmss --mss ${mss} ${msssize}
-			unset mss msssize interface type
+			unset interface mss type msssize
 		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
