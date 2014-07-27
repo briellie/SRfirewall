@@ -172,16 +172,21 @@ function enable_mss_clamp {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf successful"
-		while read -r interface mss type; do
+		while read -r interface mss type size; do
 			[[ ${interface} = \#* ]] && continue
 			[[ ${interface} = "" ]] && continue
+			[[ -z ${mss} ]] && mss="-"
 			[[ ${mss} == "-" ]] && mss="1400:1536"
+			[[ -z ${type} ]] && type="-"
 			[[ ${type} == "-" ]] && type="${OutFilter}"
 			[[ ${type} == "out" ]] && type="${OutFilter}"
 			[[ ${type} == "fwd" ]] && type="${FwdFilter}"
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type}"
+			[[ -z ${size} ]] && size="-"
+			[[ ${size} == "-" ]] && size="--clamp-mss-to-pmtu"
+			[[ ${size} != "-" ]] && size="--set-mss ${size}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type} ${size}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-				--clamp-mss-to-pmtu -o ${interface} -m tcpmss --mss ${mss}
+				${size} -o ${interface} -m tcpmss --mss ${mss}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
