@@ -452,7 +452,7 @@ function enable_nat {
 		while read -r type srcinterface srcaddress dstinterface dstaddress custom; do
 			[[ ${type} = \#* ]] && continue
 			[[ ${type} = "" ]] && continue
-			([[ ${type} != "SNAT" ]] && [[ ${type} != "MASQ" ]] && [[ ${type} != "NETMAP" ]] && [[ ${type} != "ACCEPT") \
+			([[ ${type} != "SNAT" ]] && [[ ${type} != "MASQ" ]] && [[ ${type} != "NETMAP" ]] && [[ ${type} != "ACCEPT" ]]) \
 					&& ${display} RED "nat.conf: Error - must begin with SNAT/MASQ/NETMAP/ACCEPT: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${custom}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
