@@ -317,7 +317,7 @@ function enable_filtering {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/acl.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/acl.conf successful"
-		while read -r direction action interface srcaddress srcport dstaddress dstport protocol syn state; do
+		while read -r direction action interface srcaddress srcport dstaddress dstport protocol syn state custom; do
 			[[ ${direction} = \#* ]] && continue
 			[[ ${direction} = "" ]] && continue
 			([[ ${direction} != "IN" ]] && [[ ${direction} != "OUT" ]]) \
@@ -343,7 +343,7 @@ function enable_filtering {
 			[[ ${syn} == "syn" ]] && syn="--syn"
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${syn}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${syn} ${custom}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${interface} == "-" ]] && interface=""
@@ -353,8 +353,9 @@ function enable_filtering {
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			[[ ${protocol} == "-" ]] && protocol=""
 			[[ ${syn} == "-" ]] && syn=""
+			[[ ${custom} == "-" ]] && custom=""
 			
-			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${syn} ${dstaddress} ${dstport} ${conntrack_state} -j ${action}
+			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${syn} ${dstaddress} ${dstport} ${conntrack_state} ${custom} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/acl.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
@@ -371,7 +372,7 @@ function enable_forwarding {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/forward.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/forward.conf successful"
-		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn state; do
+		while read -r action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn state custom; do
 			unset conntrack_state conntrack_udp_new revsrcaddress revdstaddress revdstinterface revsrcinterface revsrcport revdstport
 			[[ ${action} = \#* ]] && continue
 			[[ -z ${action} ]] && continue
@@ -425,9 +426,10 @@ function enable_forwarding {
 			[[ ${state} == "-" ]] && state=""
 			[[ ${protocol} == "-" ]] && protocol=""
 			[[ ${bidirectional} == "-" ]] && bidirectional="no"
+			[[ ${custom} == "-" ]] && custom=""
 
-			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} -j ${action}
-			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} -j ${action}
+			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} ${custom} -j ${action}
+			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} ${custom} -j ${action}
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
@@ -447,16 +449,16 @@ function enable_nat {
 
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/nat.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/nat.conf successful"
-		while read -r type srcinterface srcaddress dstinterface dstaddress; do
+		while read -r type srcinterface srcaddress dstinterface dstaddress custom; do
 			[[ ${type} = \#* ]] && continue
 			[[ ${type} = "" ]] && continue
-			([[ ${type} != "SNAT" ]] && [[ ${type} != "MASQ" ]] && [[ ${type} != "NETMAP" ]]) \
-					&& ${display} RED "nat.conf: Error - must begin with SNAT/MASQ/NETMAP: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" && continue
+			([[ ${type} != "SNAT" ]] && [[ ${type} != "MASQ" ]] && [[ ${type} != "NETMAP" ]] && [[ ${type} != "ACCEPT") \
+					&& ${display} RED "nat.conf: Error - must begin with SNAT/MASQ/NETMAP/ACCEPT: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${custom}" && continue
 
 			# Do some creative work with variables to make building the iptables rules fairly painless
-			[[ ${srcaddress} != "-" ]] && revsrcaddress="-d ${srcaddress}"
-			[[ ${dstinterface} != "-" ]] && revdstinterface="-i ${dstinterface}"
-			[[ ${srcinterface} != "-" ]] && revsrcinterface="-o ${srcinterface}"
+			#[[ ${srcaddress} != "-" ]] && revsrcaddress="-d ${srcaddress}"
+			#[[ ${dstinterface} != "-" ]] && revdstinterface="-i ${dstinterface}"
+			#[[ ${srcinterface} != "-" ]] && revsrcinterface="-o ${srcinterface}"
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
 			([[ ${srcaddress} != "-" ]] && [[ ${type} != "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
@@ -474,17 +476,18 @@ function enable_nat {
 			([[ ${srcaddress} != "-" ]] && [[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && action="-j NETMAP" && srcaddress="-d ${srcaddress}" && dstaddress="--to ${dstaddress}"
 			
 
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${custom}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${srcinterface} == "-" ]] && srcinterface=""
 			[[ ${dstinterface} == "-" ]] && dstinterface=""
 			[[ ${dstaddress} == "-" ]] && dstaddress=""
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
+			[[ ${custom} == "-" ]] && custom=""
 			
-			${VER_IPTABLES} -A ${NAT} -t nat ${srcaddress} ${action} ${dstinterface} ${dstaddress}
-			${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED,NEW ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
-			${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${revsrcinterface} ${revsrcaddress} ${revdstinterface} -j ACCEPT
+			${VER_IPTABLES} -A ${NAT} -t nat ${srcaddress} ${dstinterface} ${dstaddress} ${custom} ${action}
+			#${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED,NEW ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
+			#${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${revsrcinterface} ${revsrcaddress} ${revdstinterface} -j ACCEPT
 			done < "${FWCONFIGDIR}/ipv${IPVER}/nat.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi

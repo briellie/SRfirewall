@@ -1,3 +1,9 @@
+2.1 Alpha 1 - 11/29/2014
+	- Added support for custom fields in NAT and ACL rules, as this allows
+		definition of Policy rules in the ACL files (mostly useful for IPSec)
+	- NAT rules no longer add accept state rules, should be added in forward.conf
+		manually
+
 2.01 Alpha 1 - 07/27/2014
 	- Fix executable bits on .sh files in custom
 	- Make MSS clamp optional and allow setting MSS size manually
