@@ -390,8 +390,8 @@ function enable_forwarding {
 			[[ -z ${syn} ]] && syn="-"
 			[[ -z ${state} ]] && state="-"
 			
-			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]] && [[ ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
-			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]] && [[ ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
+			#([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]] && [[ ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
+			#([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]] && [[ ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ESTABLISHED,RELATED"
 			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]] && [[ ! ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ${state}"
 			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]] && [[ ! ${state} == "-" ]]) && conntrack_state="${M_STATE} ${C_STATE} ${state}"
 			
