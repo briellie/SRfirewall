@@ -1,0 +1,7 @@
+{
+    "version": "2.1a1",
+    "state": "alpha",
+    "scope": "major changes",
+    "changes": "Added new custom options for rules in nat, filters, and forwarding (mostly useful with ipsec policy), some code cleanups, changing default rules.",
+    "download": "https://source.sosdg.org/brielle/srfirewall/repository/archive.tar.bz2?ref=v2.1a1"
+}
