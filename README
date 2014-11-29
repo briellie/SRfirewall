@@ -1,5 +1,6 @@
-SRFirewall v2.0 http://www.sosdg.org/freestuff/firewall Written by:
-Brielle Bruns <bruns@2mbit.com>
+SRFirewall v2.1
+http://www.sosdg.org/freestuff/firewall
+Written by: Brielle Bruns <bruns@2mbit.com>
 
 SRFirewall is a complete rewrite of Firewall/SOSDG v1.1, from scratch,
 with a completely new and reorganized config and file layout.

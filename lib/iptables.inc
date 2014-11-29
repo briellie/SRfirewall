@@ -476,7 +476,7 @@ function enable_nat {
 			([[ ${srcaddress} != "-" ]] && [[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && action="-j NETMAP" && srcaddress="-d ${srcaddress}" && dstaddress="--to ${dstaddress}"
 			
 
-			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${custom}"
+			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${srcinterface} ${srcaddress} ${srcport} ${dstinterface} ${dstaddress} ${dstport} ${protocol} ${custom}"
 			
 			# Blank variables that we're not going to use.
 			[[ ${srcinterface} == "-" ]] && srcinterface=""
