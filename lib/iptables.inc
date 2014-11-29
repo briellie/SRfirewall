@@ -468,6 +468,7 @@ function enable_nat {
 					${display} RED "nat.conf: Error - MASQ rule can not have empty destination interface: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" \
 					&& continue
 
+			([[ ${dstaddress} != "-" ]] && [[ ${type} == "ACCEPT" ]]) && action="-j ACCEPT" && dstaddress="-d ${dstaddress}"
 			([[ ${dstaddress} != "-" ]] && [[ ${type} == "SNAT" ]]) && action="-j SNAT" && dstaddress="--to-source ${dstaddress}"
 			([[ ${dstaddress} == "-" ]] && [[ ${type} == "SNAT" ]]) && \
 					${display} RED "nat.conf: Error - SNAT rule can not have empty destination address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" \
