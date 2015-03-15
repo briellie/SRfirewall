@@ -356,7 +356,7 @@ function enable_filtering {
 			[[ ${custom} == "-" ]] && custom=""
 			
 			${VER_IPTABLES} -A ${chain} ${interface} ${protocol} ${srcaddress} ${srcport} ${syn} ${dstaddress} ${dstport} ${conntrack_state} ${custom} -j ${action}
-			unset direction action interface srcaddress srcport dstaddress dstport protocol syn state custom
+			unset direction action interface srcaddress srcport dstaddress dstport protocol syn state custom conntrack_state
 		done < "${FWCONFIGDIR}/ipv${IPVER}/acl.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 	fi
@@ -431,9 +431,9 @@ function enable_forwarding {
 
 			${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${srcinterface} ${srcaddress} ${srcport} ${syn} ${dstinterface} ${dstaddress} ${dstport} ${conntrack_state} ${custom} -j ${action}
 			[[ ${bidirectional} == "yes" ]] && ${VER_IPTABLES} -A ${FwdFilter} ${protocol} ${revsrcinterface} ${revsrcaddress} ${revsrcport} ${syn} ${revdstinterface} ${revdstaddress} ${revdstport} ${conntrack_state} ${custom} -j ${action}
+			unset action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn state custom conntrack_state
 		done < "${FWCONFIGDIR}/ipv${IPVER}/forward.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
-		unset action srcinterface srcaddress dstinterface dstaddress bidirectional srcport dstport protocol syn state custom
 	fi
 }
 
@@ -491,9 +491,9 @@ function enable_nat {
 			${VER_IPTABLES} -A ${NAT} -t nat ${srcaddress} ${action} ${dstinterface} ${dstaddress} ${custom}
 			#${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED,NEW ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
 			#${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${revsrcinterface} ${revsrcaddress} ${revdstinterface} -j ACCEPT
+			unset type srcinterface srcaddress dstinterface dstaddress custom
 			done < "${FWCONFIGDIR}/ipv${IPVER}/nat.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
-		unset type srcinterface srcaddress dstinterface dstaddress custom
 	fi
 		
 }
@@ -537,7 +537,7 @@ function enable_services {
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			
 			${VER_IPTABLES} -A ${InFilter} ${protocol} ${service} ${interface} ${address} ${srcaddress} ${conntrack_state} -j ACCEPT
-			
+			unset service protocol interface address srcaddress conntrack_state
 		done < "${FWCONFIGDIR}/ipv${IPVER}/services.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
 		unset service protocol interface address srcaddress
@@ -621,10 +621,9 @@ function enable_portfw {
 			
 			${VER_IPTABLES} -A ${PortForward} -t nat ${protocol} ${service} ${interface} ${address} ${srcaddress} -j DNAT ${intdest}
 			${VER_IPTABLES} -A ${FwdFilter} ${interface} ${intip} ${protocol} ${intport} ${srcaddress} ${conntrack_state} -j ACCEPT
-			
+			unset service protocol intip intport interface address srcaddress conntrack_state
 		done < "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf"
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} done"
-		unset service protocol intip intport interface address srcaddress
 	fi
 }
 
