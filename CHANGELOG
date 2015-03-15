@@ -1,3 +1,7 @@
+2.1 Alpha 2 - 03/15/2015
+	- Unset variables in loops to make sure theres no leakage of
+		variables into the next run of the loop
+
 2.1 Alpha 1 - 11/29/2014
 	- Added support for custom fields in NAT and ACL rules, as this allows
 		definition of Policy rules in the ACL files (mostly useful for IPSec)
