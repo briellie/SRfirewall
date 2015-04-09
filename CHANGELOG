@@ -1,6 +1,8 @@
 2.1 Alpha 2 - 03/15/2015
 	- Unset variables in loops to make sure theres no leakage of
 		variables into the next run of the loop
+	04/09/2015
+	- Allow use of 'all' in MSS rules to match all forwarding/out traffic
 
 2.1 Alpha 1 - 11/29/2014
 	- Added support for custom fields in NAT and ACL rules, as this allows
