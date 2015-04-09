@@ -176,7 +176,7 @@ function enable_mss_clamp {
 			[[ ${interface} = \#* ]] && continue
 			[[ ${interface} = "" ]] && continue
 			#[[ -z ${mss} ]] && mss="-"
-			[[ ${mss} != "-" ]] && mss="--mss ${mss}"
+			[[ ${mss} != "-" ]] && mss="-m tcpmss --mss ${mss}"
 			[[ ${mss} == "-" ]] && mss=""
 			[[ -z ${type} ]] && type="-"
 			[[ ${type} == "-" ]] && type="${OutFilter}"
@@ -189,7 +189,7 @@ function enable_mss_clamp {
 			[[ ${interface} == "all" ]] && interface=""
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type} ${msssize}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-				 ${interface} -m tcpmss ${mss} ${msssize}
+				 ${interface} ${mss} ${msssize}
 			unset interface mss type msssize
 		done < "${FWCONFIGDIR}/ipv${IPVER}/mss-clamp.conf"
 
