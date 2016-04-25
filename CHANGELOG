@@ -1,5 +1,5 @@
-2.1 Alpha 3 - 04/25.2016
-	- Fix issue with erasing variables in services setup
+2.1 Alpha 3 - 04/25/2016
+	- Fix issue with erasing variables in two different setups
 
 2.1 Alpha 2 - 03/15/2015
 	- Unset variables in loops to make sure theres no leakage of
