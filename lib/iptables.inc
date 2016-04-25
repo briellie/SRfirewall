@@ -188,6 +188,7 @@ function enable_mss_clamp {
 			[[ ${msssize} == "-" ]] && msssize="--clamp-mss-to-pmtu"
 			#[[ ${interface} != "all" ]] && interface="-o ${interface}"
 			[[ ${type} == "${OutFilter}" ]] && interface="-o ${interface}"
+			[[ ${type} == "${FwdFilter}" ]] && interface="-o ${interface}"
 			[[ ${isallinterfaces} == "yes" ]] && interface=""
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} Read: ${interface} ${mss} ${type} ${msssize}"
 			${VER_IPTABLES} -A ${type} -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
