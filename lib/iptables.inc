@@ -588,10 +588,10 @@ function enable_portfw {
 	${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} loading"
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/portfw.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/portfw.conf successful"
-		use_conntrack="no"
-		([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
-		([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
 		while read -r service protocol intip intport interface address srcaddress; do
+			use_conntrack="no"
+			([[ ${IP_VERSION} == "ipv4" ]] && [[ ${Enablev4ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
+			([[ ${IP_VERSION} == "ipv6" ]] && [[ ${Enablev6ConnectionTracking} == "yes" ]]) && conntrack_state="${M_STATE} ${C_STATE} NEW"
 			[[ ${service} = \#* ]] && continue
 			[[ -z ${service} ]] && continue
 			[[ ${service} == "-" ]] \
