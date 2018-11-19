@@ -1,3 +1,6 @@
+2.1 Beta 1 - 11/19/2018
+	- Add run-after  and run-before rules (custom/runafter.sh and custom/runbefore.sh)
+
 2.1 Alpha 3 - 04/25/2016
 	- Fix issue with erasing variables in two different setups
 	- mss clamp fix for fwd target
