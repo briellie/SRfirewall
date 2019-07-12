@@ -42,6 +42,8 @@ function iptables_rules_flush {
 	${VER_IPTABLES} -t nat -X &>/dev/null
 	${VER_IPTABLES} -t mangle -F &>/dev/null
 	${VER_IPTABLES} -t mangle -X &>/dev/null
+	${VER_IPTABLES} -t raw -F &>/dev/null
+	${VER_IPTABLES} -t raw -X &>/dev/null
 	for i in `cat $TABLE_NAMES`; do
 		${VER_IPTABLES} -F -t $i &>/dev/null
 	done
