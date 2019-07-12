@@ -1,3 +1,7 @@
+2.1 Final - 07/12/2019
+	- Fix flush tables rule for raw
+	- Final 2.1 release since we've had 2.1 for 5 years now without being 'released'
+
 2.1 Beta 1 - 11/19/2018
 	- Add run-after  and run-before rules (custom/runafter.sh and custom/runbefore.sh)
 
