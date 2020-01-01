@@ -1,5 +1,5 @@
 2.1p1 - 01/01/2020
-	- Fix NETMAP so it works properly (was doing -d instead of -s for source address)
+	- Refactor NETMAP NAT target so its more flexible.  See new example nat.conf file for details
 
 2.1 Final - 07/12/2019
 	- Fix flush tables rule for raw

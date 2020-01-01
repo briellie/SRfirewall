@@ -484,7 +484,13 @@ function enable_nat {
 					${display} RED "nat.conf: Error - SNAT rule can not have empty destination address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress}" \
 					&& continue
 
-			([[ ${srcaddress} != "-" ]] && [[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && action="-j NETMAP" && srcaddress="-s ${srcaddress}" && dstaddress="--to ${dstaddress}"
+			[[ ${type} == "NETMAP" ]] && action="-j NETMAP"
+			([[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) dstaddress="-d ${dstaddress}"
+			([[ ${srcaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) srcaddress="-s ${srcaddress}"
+			([[ ${custom} == "" ]] && [[ ${type} == "NETMAP" ]]) && \
+					${display} RED "nat.conf: Error - NETMAP rule can not have empty custom address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${custom}" \
+					&& continue
+			([[ ${custom} != "" ]] && [[ ${type} == "NETMAP" ]]) && custom="--to ${custom}"
 			
 
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${srcinterface} ${srcaddress} ${srcport} ${dstinterface} ${dstaddress} ${dstport} ${protocol} ${custom}"
