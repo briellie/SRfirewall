@@ -493,8 +493,8 @@ function enable_nat {
 
 			# If we use a source interface, the rule can't go in a POSTROUTING table like what NAT is, so we punt it to PREROUTING
 			# or it won't work.  Plus we remove the destination interface too.
-			#([[ ${srcinterface} != "-" ]] && [[ ${type} == "NETMAP" ]]) && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
-			[[ ${srcinterface} != "-" ]] && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
+			([[ ${srcinterface} != "-" ]] && [[ ${type} != "SNAT" ]]) && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
+			#[[ ${srcinterface} != "-" ]] && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
 			
 
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${srcinterface} ${srcaddress} ${srcport} ${dstinterface} ${dstaddress} ${dstport} ${protocol} ${custom}"
