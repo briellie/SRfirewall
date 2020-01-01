@@ -469,7 +469,7 @@ function enable_nat {
 			#[[ ${srcaddress} != "-" ]] && revsrcaddress="-d ${srcaddress}"
 			#[[ ${dstinterface} != "-" ]] && revdstinterface="-i ${dstinterface}"
 			#[[ ${srcinterface} != "-" ]] && revsrcinterface="-o ${srcinterface}"
-			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
+			#[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
 			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
 			
@@ -493,6 +493,7 @@ function enable_nat {
 
 			# If we use a source interface, the rule can't go in a POSTROUTING table like what NAT is, so we punt it to PREROUTING
 			# or it won't work.  Plus we remove the destination interface too.
+			#([[ ${srcinterface} != "-" ]] && [[ ${type} == "NETMAP" ]]) && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
 			[[ ${srcinterface} != "-" ]] && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
 			
 
