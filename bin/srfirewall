@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Static config options, normally do not need to change
-FW_VERSION="2.1"
+FW_VERSION="2.1p1"
 
 # Important directory locations
 FWPREFIX="/usr/local"

@@ -1,3 +1,6 @@
+2.1p1 - 01/01/2020
+	- Fix NETMAP so it works properly (was doing -d instead of -s for source address)
+
 2.1 Final - 07/12/2019
 	- Fix flush tables rule for raw
 	- Final 2.1 release since we've had 2.1 for 5 years now without being 'released'
