@@ -472,7 +472,7 @@ function enable_nat {
 			#[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
 			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
-			([[ ${srcinterface} == "-" ]] && [[ ${type} == "SNAT" ]]) && srcinterface="-"
+			([[ ${srcinterface} != "-" ]] && [[ ${type} == "SNAT" ]]) && srcinterface="-"
 			
 			([[ ${dstinterface} != "-" ]] && [[ ${type} == "MASQ" ]]) && action="-j MASQUERADE" 
 			([[ ${dstinterface} == "-" ]] && [[ ${type} == "MASQ" ]]) && \
