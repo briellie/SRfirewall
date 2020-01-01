@@ -485,14 +485,15 @@ function enable_nat {
 					&& continue
 
 			[[ ${type} == "NETMAP" ]] && action="-j NETMAP"
-			([[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && dstaddress="-d ${dstaddress}"
-			# If we use a source interface, the rule can't go in a POSTROUTING table like what NAT is, so we punt it to PREROUTING
-			# or it won't work.  Plus we remove the destination interface too.
-			([[ ${srcinterface} != "-" ]] && [[ ${type} == "NETMAP" ]]) && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
 			([[ ${custom} == "" ]] && [[ ${type} == "NETMAP" ]]) && \
 					${display} RED "nat.conf: Error - NETMAP rule can not have empty custom address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${custom}" \
 					&& continue
 			([[ ${custom} != "" ]] && [[ ${type} == "NETMAP" ]]) && custom="--to ${custom}"
+			([[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && dstaddress="-d ${dstaddress}"
+
+			# If we use a source interface, the rule can't go in a POSTROUTING table like what NAT is, so we punt it to PREROUTING
+			# or it won't work.  Plus we remove the destination interface too.
+			[[ ${srcinterface} != "-" ]] && NAT="PREROUTING" && dstinterface="-" && srcinterface="-i ${srcinterface}"
 			
 
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${srcinterface} ${srcaddress} ${srcport} ${dstinterface} ${dstaddress} ${dstport} ${protocol} ${custom}"
@@ -504,7 +505,7 @@ function enable_nat {
 			[[ ${srcaddress} == "-" ]] && srcaddress=""
 			[[ ${custom} == "-" ]] && custom=""
 
-			${VER_IPTABLES} -A ${NAT} -t nat ${srcaddress} ${action} ${dstinterface} ${dstaddress} ${custom}
+			${VER_IPTABLES} -A ${NAT} -t nat ${srcinterface} ${srcaddress} ${action} ${dstinterface} ${dstaddress} ${custom}
 			#${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED,NEW ${srcinterface} ${srcaddress} ${dstinterface} -j ACCEPT
 			#${VER_IPTABLES} -A ${FwdFilter} ${M_STATE} ${C_STATE} RELATED,ESTABLISHED ${revsrcinterface} ${revsrcaddress} ${revdstinterface} -j ACCEPT
 			unset type srcinterface srcaddress dstinterface dstaddress custom
