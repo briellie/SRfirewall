@@ -471,7 +471,7 @@ function enable_nat {
 			#[[ ${srcinterface} != "-" ]] && revsrcinterface="-o ${srcinterface}"
 			[[ ${srcinterface} != "-" ]] && srcinterface="-i ${srcinterface}"
 			[[ ${dstinterface} != "-" ]] && dstinterface="-o ${dstinterface}"
-			([[ ${srcaddress} != "-" ]] && [[ ${type} != "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
+			[[ ${srcaddress} != "-" ]] && srcaddress="-s ${srcaddress}"
 			
 			([[ ${dstinterface} != "-" ]] && [[ ${type} == "MASQ" ]]) && action="-j MASQUERADE" 
 			([[ ${dstinterface} == "-" ]] && [[ ${type} == "MASQ" ]]) && \
@@ -486,7 +486,9 @@ function enable_nat {
 
 			[[ ${type} == "NETMAP" ]] && action="-j NETMAP"
 			([[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && dstaddress="-d ${dstaddress}"
-			([[ ${srcaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
+			# If we use a source interface, the rule can't go in a POSTROUTING table like what NAT is, so we punt it to PREROUTING
+			# or it won't work.  Plus we remove the destination interface too.
+			([[ ${srcinterface} != "-" ]] && [[ ${type} == "NETMAP" ]]) && NAT="PREROUTING" && dstinterface="-"
 			([[ ${custom} == "" ]] && [[ ${type} == "NETMAP" ]]) && \
 					${display} RED "nat.conf: Error - NETMAP rule can not have empty custom address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${custom}" \
 					&& continue
