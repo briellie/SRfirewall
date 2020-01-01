@@ -485,8 +485,8 @@ function enable_nat {
 					&& continue
 
 			[[ ${type} == "NETMAP" ]] && action="-j NETMAP"
-			([[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) dstaddress="-d ${dstaddress}"
-			([[ ${srcaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) srcaddress="-s ${srcaddress}"
+			([[ ${dstaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && dstaddress="-d ${dstaddress}"
+			([[ ${srcaddress} != "-" ]] && [[ ${type} == "NETMAP" ]]) && srcaddress="-s ${srcaddress}"
 			([[ ${custom} == "" ]] && [[ ${type} == "NETMAP" ]]) && \
 					${display} RED "nat.conf: Error - NETMAP rule can not have empty custom address: ${DEFAULT_COLOR}${type} ${srcinterface} ${srcaddress} ${dstinterface} ${dstaddress} ${custom}" \
 					&& continue
