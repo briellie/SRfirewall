@@ -459,7 +459,9 @@ function enable_nat {
 
 	if [ -e "${FWCONFIGDIR}/ipv${IPVER}/nat.conf" ]; then
 		${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR} read ${FWCONFIGDIR}/ipv${IPVER}/nat.conf successful"
+		ORIG_NAT=${NAT}
 		while read -r type srcinterface srcaddress dstinterface dstaddress custom; do
+			NAT=${ORIG_NAT}
 			[[ ${type} = \#* ]] && continue
 			[[ ${type} = "" ]] && continue
 			([[ ${type} != "SNAT" ]] && [[ ${type} != "MASQ" ]] && [[ ${type} != "NETMAP" ]] && [[ ${type} != "ACCEPT" ]]) \

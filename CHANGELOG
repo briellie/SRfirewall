@@ -1,3 +1,6 @@
+2.1p2 - 02/27/2020
+	- Fix issue with NAT variable not being reset after being changed
+
 2.1p1 - 01/01/2020
 	- Refactor NETMAP NAT target so its more flexible.  See new example nat.conf file for details
 
