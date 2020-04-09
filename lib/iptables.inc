@@ -353,6 +353,15 @@ function enable_filtering {
 			
 			${debug} ${DebugColor} "${FUNCNAME}:${DEFAULT_COLOR}${direction} ${action} ${interface} ${srcaddress} ${srcport} ${dstaddress} ${dstport} ${protocol} ${syn} ${custom}"
 			
+			dstmultiport="no"
+			srcmultiport="no"
+			[[ ${dstport} =~ (-|:|,) ]] && dstmultiport="yes"
+			[[ ${srcport} =~ (-|:|,) ]] && srcmultiport="yes"
+			([[ ${dstport} != "-" ]] && [[ ${dstmultiport} != "yes" ]]) && dstport="--dport ${dstport}"
+			([[ ${srcport} != "-" ]] && [[ ${srcmultiport} != "yes" ]]) && srcport="--dport ${srcport}"
+			([[ ${dstport} != "-" ]] && [[ ${dstmultiport} == "yes" ]]) && dstport="-m multiport --dports ${dstport}"
+			([[ ${srcport} != "-" ]] && [[ ${srcmultiport} == "yes" ]]) && srcport="-m multiport --sports ${srcport}"
+
 			# Blank variables that we're not going to use.
 			[[ ${interface} == "-" ]] && interface=""
 			[[ ${dstport} == "-" ]] && dstport=""
@@ -418,12 +427,12 @@ function enable_forwarding {
 			[[ ${syn} == "notsyn" ]] && syn="! --syn"
 			dstmultiport="no"
 			srcmultiport="no"
-			[[ ${dstport} =~ "," ]] && dstmultiport="yes"
-			[[ ${srcport} =~ "," ]] && srcmultiport="yes"
+			[[ ${dstport} =~ (-|:|,) ]] && dstmultiport="yes"
+			[[ ${srcport} =~ (-|:|,) ]] && srcmultiport="yes"
 			([[ ${dstport} != "-" ]] && [[ ${dstmultiport} != "yes" ]]) && dstport="--dport ${dstport}"
-			([[ ${srcport} != "-" ]] && [[ ${srcmultiport} != "yes" ]]) && srcport="--dport ${srcport}"
+			([[ ${srcport} != "-" ]] && [[ ${srcmultiport} != "yes" ]]) && srcport="--sport ${srcport}"
 			([[ ${dstport} != "-" ]] && [[ ${dstmultiport} == "yes" ]]) && dstport="-m multiport --dports ${dstport}"
-			([[ ${srcport} != "-" ]] && [[ ${srcmultiport} == "yes" ]]) && srcport="-m multiport --dports ${srcport}"
+			([[ ${srcport} != "-" ]] && [[ ${srcmultiport} == "yes" ]]) && srcport="-m multiport --sports ${srcport}"
 			([[ ${bidirectional} == "yes" ]] && [[ ${srcport} != "-" ]]) && revsrcport=${srcport/sport/dport}
 			([[ ${bidirectional} == "yes" ]] && [[ ${dstport} != "-" ]]) && revdstport=${dstport/dport/sport}
 			#[[ ${dstport} != "-" ]] && dstport="--dport ${dstport}"
@@ -551,7 +560,7 @@ function enable_services {
 					&& ${display} RED "service.conf: Error - must begin with service name or port number: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${address} ${srcaddress}" && continue
 			[[ ${protocol} == "-" ]] \
 					&& ${display} RED "service.conf: Error - protocol can not be empty: ${DEFAULT_COLOR}${service} ${protocol} ${interface} ${address} ${srcaddress}" && continue
-			[[ ${service} =~ "," ]] && multiport="yes"
+			[[ ${service} =~ (-|:|,) ]] && multiport="yes"
 			# Do some creative work with variables to make building the iptables rules fairly painless
 			([[ ${service} != "-" ]] && [[ ${multiport} != "yes" ]]) && service="--dport ${service}"
 			([[ ${service} != "-" ]] && [[ ${multiport} == "yes" ]]) && service="-m multiport --dports ${service}"

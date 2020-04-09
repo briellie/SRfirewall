@@ -1,3 +1,6 @@
+2.2 - 04/09/2020
+	- Add multiport support to acl/forward
+
 2.1p2 - 02/27/2020
 	- Fix issue with NAT variable not being reset after being changed
 
