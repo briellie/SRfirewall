@@ -1,3 +1,8 @@
+2.2.1 - 04/17/2021
+	- Add support for iptables options via IPTABLESOPT and IP6TABLESOPT.  These options are
+	applied at the beginning of the command line options to EVERY instance of $IPTABLES.
+	Useful for '-w' to deal with xtables lock issues.
+
 2.2 - 04/09/2020
 	- Add multiport support to acl/forward
 
