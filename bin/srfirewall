@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Static config options, normally do not need to change
-FW_VERSION="2.2"
+FW_VERSION="2.2.1"
 
 # Important directory locations
 FWPREFIX="/usr/local"
@@ -154,6 +154,16 @@ if [ ! -e "/proc/net/ip6_tables_names" ] && [ "${EnableIPv6}" == "yes" ] && [ "$
 		${display} GREEN "Module successfully loaded."
 	fi
 fi
+
+# Splice in iptables options via IPTABLESOPT and IP6TABLESOPT
+if [ -x "${IPTABLES}" ] &&  [ -x "${IPTABLESOPT}" ]; then
+	IPTABLES="${IPTABLES} ${IPTABLESOPT}"
+fi
+
+if [ -x "${IP6TABLES}" ] && [ -x "${IP6TABLESOPT}" ]; then
+	IPTABLES="${IP6TABLES} ${IP6TABLESOPT}"
+fi
+
 
 # Set up proper state matching variables, since there is old and new style.
 if [ "$StateMatching" ]; then
