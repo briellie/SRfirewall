@@ -3,5 +3,5 @@
     "state": "stable",
     "scope": "minor fixes",
     "changes": "See CHANGELOG",
-    "download": "https://source.sosdg.org/brielle/srfirewall/repository/archive.tar.bz2?ref=v2.1p2"
+    "download": "https://git.sosdg.org/brielle/SRFirewall/releases"
 }
