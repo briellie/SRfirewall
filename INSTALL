@@ -1,4 +1,4 @@
-SRFirewall v2.0 http://www.sosdg.org/freestuff/firewall
+SRFirewall v2.2.1 http://www.sosdg.org/freestuff/firewall
 Written by: Brielle Bruns <bruns@2mbit.com>
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -21,14 +21,14 @@ it:
 
 === Begin commands ===
 cd /usr/src
-svn checkout http://firewall-sosdg.googlecode.com/svn/srfirewall srfirewall-trunk
-ln -s /usr/src/srfirewall-trunk/lib /usr/local/lib/srfirewall
-ln -s /usr/src/srfirewall-trunk/bin/srfirewall /usr/local/bin/srfirewall
-cp -R /usr/src/srfirewall-trunk/etc /usr/local/etc/srfirewall
+git clone https://git.sosdg.org/brielle/SRFirewall.git
+ln -s /usr/src/srfirewall/lib /usr/local/lib/srfirewall
+ln -s /usr/src/srfirewall/bin/srfirewall /usr/local/bin/srfirewall
+cp -R /usr/src/srfirewall/etc /usr/local/etc/srfirewall
 === End commands ===
 
 Then when you want to update to bleeding edge, all you have to run is
-'svn update'.
+'git pull'.
 
 You _will_ need to look for newly changed/added files and update
 appropriately.
